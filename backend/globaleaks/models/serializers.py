@@ -261,6 +261,12 @@ def serialize_rtip(session, itip, rtip, language):
     ret['custodian'] = State.tenants[itip.tid].cache['custodian']
     ret['important'] = itip.important
     ret['label'] = itip.label
+    ret['label1'] = itip.label1  # Add label1
+    ret['label2'] = itip.label2  # Add label2
+    ret['label3'] = itip.label3  # Add label3
+    ret['label4'] = itip.label4  # Add label4
+    ret['label5'] = itip.label5  # Add label5
+    ret['label6'] = itip.label6  # Add label6
     ret['enable_notifications'] = rtip.enable_notifications
 
     iar = session.query(models.IdentityAccessRequest) \

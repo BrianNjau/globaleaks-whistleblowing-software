@@ -86,6 +86,7 @@ export class TipsComponent implements OnInit {
       this.router.navigate(["/recipient/home"]).then();
     } else {
       this.filteredTips = this.RTips.dataModel;
+      console.log("RTips.dataModel:", this.RTips.dataModel);
       this.processTips();
     }
   }
@@ -412,6 +413,12 @@ export class TipsComponent implements OnInit {
       reportStatus: this.utils.isDatePassed(tip.reminder_date),
       context_name: tip.context_name,
       label: tip.label,
+      label1: tip.label1,
+      label2: tip.label2,
+      label3: tip.label3,
+      label4: tip.label4,
+      label5: tip.label5,
+      label6: tip.label6,
       status: tip.submissionStatusStr,
       creation_date: formatDate(tip.creation_date, 'dd-MM-yyyy HH:mm', 'en-US'),
       update_date: formatDate(tip.update_date, 'dd-MM-yyyy HH:mm', 'en-US'),
@@ -419,7 +426,7 @@ export class TipsComponent implements OnInit {
       last_access: formatDate(tip.last_access, 'dd-MM-yyyy HH:mm', 'en-US'),
       comment_count: tip.comment_count,
       file_count: tip.file_count,
-      subscription: tip.subscription === 0 ? 'Non sottoscritta' : tip.subscription === 1 ? 'Sottoscritta' : 'Sottoscritta successivamente',
+      subscription: tip.subscription === 0 ? 'Not signed' : tip.subscription === 1 ? 'Signed' : 'Signed later',
       receiver_count: tip.receiver_count
     }));
   }
@@ -432,6 +439,12 @@ export class TipsComponent implements OnInit {
       'Reminder',
       'Channel',
       'Label',
+      'Site',
+      'Sub-site',
+      'Issue type',
+      'Sub-issue type',
+      'Priority',
+      'Assigned Investigator',
       'Report Status',
       'Date of Report',
       'Last Update',

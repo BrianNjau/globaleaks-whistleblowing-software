@@ -891,7 +891,30 @@ def set_internaltip_variable(session, tid, user_id, itip_id, key, value):
         value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
 
     setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label1']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
 
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label2']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label3']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label4']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label5']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label6']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
 
 @transact
 def set_receivertip_variable(session, tid, user_id, itip_id, key, value):
@@ -1176,6 +1199,11 @@ class RTipInstance(OperationHandler):
     def set_tip_val(self, req_args, itip_id, *args, **kwargs):
         value = req_args['value']
         key = req_args['key']
+         # Check if the key is one of the labels
+        # if key.startswith('label'):
+        # # Dynamically set the label value in the internal tip
+        #     return set_internaltip_variable(self.request.tid, self.session.user_id, itip_id, key, value)
+
 
         if key == 'enable_notifications':
             return set_receivertip_variable(self.request.tid, self.session.user_id, itip_id, key, value)

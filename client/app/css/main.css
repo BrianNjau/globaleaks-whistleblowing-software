@@ -1162,3 +1162,15 @@ body .dropdown-visible > div.multiselect-dropdown > div > span.dropdown-btn {
 .form-select {
   padding: 0.3em !important;
 }
+/* Add this rule to ensure horizontal alignment */
+.label-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Adds spacing between labels */
+  align-items: center; /* Aligns items vertically in the center */
+}
+
+.label-container .input-group {
+  flex: 1; /* Ensures inputs take equal space */
+  min-width: 200px; /* Prevents inputs from shrinking too much */
+}

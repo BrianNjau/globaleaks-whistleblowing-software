@@ -38,6 +38,7 @@ class InternalTip_v_52(Model):
     crypto_tip_pub_key = Column(UnicodeText(56), default='', nullable=False)
 
 
+
 class ReceiverTip_v_52(Model):
     __tablename__ = 'receivertip'
     id = Column(UnicodeText(36), primary_key=True, default=uuid4)

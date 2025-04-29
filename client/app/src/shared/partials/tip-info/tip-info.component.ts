@@ -34,8 +34,14 @@ export class TipInfoComponent {
     return current_date > report_date;
   };
 
-  updateLabel(label: string) {
-    this.httpService.tipOperation("set", {"key": "label", "value": label}, this.rTipService.tip.id).subscribe(() => {
+  // updateLabel(label: string) {
+  //   this.httpService.tipOperation("set", {"key": "label", "value": label}, this.rTipService.tip.id).subscribe(() => {
+  //   });
+  // }
+   // Updated method to handle multiple labels
+   updateLabel(labelKey: string, labelValue: string) {
+    this.httpService.tipOperation("set", {"key": labelKey, "value": labelValue}, this.rTipService.tip.id).subscribe(() => {
+      console.log(`Label ${labelKey} updated successfully.`);
     });
   }
 }

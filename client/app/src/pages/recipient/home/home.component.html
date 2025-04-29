@@ -1,3 +1,279 @@
 <div id="RecipientHomepage">
   <src-user-home></src-user-home>
+
+  @if (RTips.dataModel && RTips.dataModel && filteredTips) {
+     <!-- Display the number of tips -->
+     <div class="row mt-2">
+      <div class="col-md-12">
+        <p>Report Count: {{ filteredTips.length }}</p>
+      </div>
+    </div>
+
+     
+    <div id="TipList" class="row mt-2">
+      <div class="col-md-12 table-responsive">
+        <table class="table table-striped" id="tipList">
+          <thead>
+            <tr>
+
+              @if (appDataService.public.contexts.length > 1) {
+                <th class="TipInfoContext">
+                  <span (click)="sortKey = 'context_name'; sortReverse = !sortReverse">
+                    <i class="fa-solid fa-inbox"></i>
+                    <span>{{'Channel' | translate}}</span>
+                    @if (sortKey === 'context_name') {
+                      <span>
+                        @if (!sortReverse) {
+                          <span class="fa-solid fa-caret-down"></span>
+                        }
+                        @if (sortReverse) {
+                          <span class="fa-solid fa-caret-up"></span>
+                        }
+                      </span>
+                    }
+                  </span>
+                  @if (RTips.dataModel.length > 0) {
+                    <span class="dropdown-multi-select-container">
+                      <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownContextModel) }" (click)="toggleChannelDropdown()"></i>
+                      <span [class.d-none]="!channelDropdownVisible">
+                        <ng-multiselect-dropdown [class.dropdown-visible]="channelDropdownVisible" [settings]="dropdownSettings" [data]="dropdownContextData" [(ngModel)]="dropdownContextModel" (ngModelChange)="onChanged(dropdownContextModel,'Channel')"></ng-multiselect-dropdown>
+                      </span>
+                    </span>
+                  }
+                </th>
+              }
+
+              <th class="TipInfoLabel">
+                <span (click)="sortKey = 'label1'; sortReverse = !sortReverse">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{'Site' | translate}}</span>
+                    @if (sortKey === 'label1') {
+                    <span>
+                        @if (!sortReverse) {
+                        <span class="fa-solid fa-caret-down"></span>
+                        }
+                        @if (sortReverse) {
+                        <span class="fa-solid fa-caret-up"></span>
+                        }
+                    </span>
+                    }
+                </span>
+                @if (RTips.dataModel.length > 0) {
+                <span class="dropdown-multi-select-container">
+                    <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownLabel1Model) }"
+                        (click)="toggleLabel1Dropdown()"></i>
+                    <span [class.d-none]="!label1DropdownVisible">
+                        <ng-multiselect-dropdown [class.dropdown-visible]="label1DropdownVisible"
+                            [settings]="dropdownSettings" [data]="dropdownLabel1Data"
+                            [(ngModel)]="dropdownLabel1Model"
+                            (ngModelChange)="onChanged(dropdownLabel1Model,'Label1')">
+                        </ng-multiselect-dropdown>
+                    </span>
+                </span>
+                }
+            </th>
+              <th class="TipInfoLabel">
+                <span (click)="sortKey = 'label2'; sortReverse = !sortReverse">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{'Sub-site' | translate}}</span>
+                    @if (sortKey === 'label2') {
+                    <span>
+                        @if (!sortReverse) {
+                        <span class="fa-solid fa-caret-down"></span>
+                        }
+                        @if (sortReverse) {
+                        <span class="fa-solid fa-caret-up"></span>
+                        }
+                    </span>
+                    }
+                </span>
+                @if (RTips.dataModel.length > 0) {
+                <span class="dropdown-multi-select-container">
+                    <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownLabel2Model) }"
+                        (click)="toggleLabel2Dropdown()"></i>
+                    <span [class.d-none]="!label2DropdownVisible">
+                        <ng-multiselect-dropdown [class.dropdown-visible]="label2DropdownVisible"
+                            [settings]="dropdownSettings" [data]="dropdownLabel2Data"
+                            [(ngModel)]="dropdownLabel2Model"
+                            (ngModelChange)="onChanged(dropdownLabel2Model,'Label2')">
+                        </ng-multiselect-dropdown>
+                    </span>
+                </span>
+                }
+              </th>
+              <th class="TipInfoLabel">
+                <span (click)="sortKey = 'label3'; sortReverse = !sortReverse">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{'Issue type' | translate}}</span>
+                    @if (sortKey === 'label3') {
+                    <span>
+                        @if (!sortReverse) {
+                        <span class="fa-solid fa-caret-down"></span>
+                        }
+                        @if (sortReverse) {
+                        <span class="fa-solid fa-caret-up"></span>
+                        }
+                    </span>
+                    }
+                </span>
+                @if (RTips.dataModel.length > 0) {
+                <span class="dropdown-multi-select-container">
+                    <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownLabel3Model) }"
+                        (click)="toggleLabel3Dropdown()"></i>
+                    <span [class.d-none]="!label3DropdownVisible">
+                        <ng-multiselect-dropdown [class.dropdown-visible]="label3DropdownVisible"
+                            [settings]="dropdownSettings" [data]="dropdownLabel3Data"
+                            [(ngModel)]="dropdownLabel3Model"
+                            (ngModelChange)="onChanged(dropdownLabel3Model,'Label3')">
+                        </ng-multiselect-dropdown>
+                    </span>
+                </span>
+                }
+              </th>
+              <th class="TipInfoLabel">
+                <span (click)="sortKey = 'label4'; sortReverse = !sortReverse">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{'Sub-issue type' | translate}}</span>
+                    @if (sortKey === 'label4') {
+                    <span>
+                        @if (!sortReverse) {
+                        <span class="fa-solid fa-caret-down"></span>
+                        }
+                        @if (sortReverse) {
+                        <span class="fa-solid fa-caret-up"></span>
+                        }
+                    </span>
+                    }
+                </span>
+                @if (RTips.dataModel.length > 0) {
+                <span class="dropdown-multi-select-container">
+                    <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownLabel4Model) }"
+                        (click)="toggleLabel4Dropdown()"></i>
+                    <span [class.d-none]="!label4DropdownVisible">
+                        <ng-multiselect-dropdown [class.dropdown-visible]="label4DropdownVisible"
+                            [settings]="dropdownSettings" [data]="dropdownLabel4Data"
+                            [(ngModel)]="dropdownLabel4Model"
+                            (ngModelChange)="onChanged(dropdownLabel4Model,'Label4')">
+                        </ng-multiselect-dropdown>
+                    </span>
+                </span>
+                }
+              </th>
+       
+              <th class="TipInfoLabel">
+                <span (click)="sortKey = 'label5'; sortReverse = !sortReverse">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{'Priority' | translate}}</span>
+                    @if (sortKey === 'label5') {
+                    <span>
+                        @if (!sortReverse) {
+                        <span class="fa-solid fa-caret-down"></span>
+                        }
+                        @if (sortReverse) {
+                        <span class="fa-solid fa-caret-up"></span>
+                        }
+                    </span>
+                    }
+                </span>
+                @if (RTips.dataModel.length > 0) {
+                <span class="dropdown-multi-select-container">
+                    <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownLabel5Model) }"
+                        (click)="toggleLabel5Dropdown()"></i>
+                    <span [class.d-none]="!label5DropdownVisible">
+                        <ng-multiselect-dropdown [class.dropdown-visible]="label5DropdownVisible"
+                            [settings]="dropdownSettings" [data]="dropdownLabel5Data"
+                            [(ngModel)]="dropdownLabel5Model"
+                            (ngModelChange)="onChanged(dropdownLabel5Model,'Label5')">
+                        </ng-multiselect-dropdown>
+                    </span>
+                </span>
+                }
+              </th>
+              <th class="TipInfoLabel">
+                <span (click)="sortKey = 'label6'; sortReverse = !sortReverse">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{'Assigned Investigator' | translate}}</span>
+                    @if (sortKey === 'label6') {
+                    <span>
+                        @if (!sortReverse) {
+                        <span class="fa-solid fa-caret-down"></span>
+                        }
+                        @if (sortReverse) {
+                        <span class="fa-solid fa-caret-up"></span>
+                        }
+                    </span>
+                    }
+                </span>
+                @if (RTips.dataModel.length > 0) {
+                <span class="dropdown-multi-select-container">
+                    <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownLabel6Model) }"
+                        (click)="toggleLabel6Dropdown()"></i>
+                    <span [class.d-none]="!label6DropdownVisible">
+                        <ng-multiselect-dropdown [class.dropdown-visible]="label6DropdownVisible"
+                            [settings]="dropdownSettings" [data]="dropdownLabel6Data"
+                            [(ngModel)]="dropdownLabel6Model"
+                            (ngModelChange)="onChanged(dropdownLabel6Model,'Label6')">
+                        </ng-multiselect-dropdown>
+                    </span>
+                </span>
+                }
+              </th>
+              <th class="TipInfoSubmissionDate">
+                <span (click)="sortKey = 'creation_date'; sortReverse = !sortReverse">
+                  <i class="fa-solid fa-clock"></i>
+                  <span>{{'Report date' | translate}}</span>
+                  @if (sortKey === 'creation_date') {
+                    <span>
+                      @if (!sortReverse) {
+                        <span class="fa-solid fa-caret-down"></span>
+                      }
+                      @if (sortReverse) {
+                        <span class="fa-solid fa-caret-up"></span>
+                      }
+                    </span>
+                  }
+                </span>
+                <span class="ngb-datepicker-container ms-1">
+                  <i class="fas fa-calendar" [ngClass]="{'calendar-active':  reportDateFilter}" (click)="reportDatePicker=!reportDatePicker;lastUpdatePicker=false;expirationDatePicker=false;statusDropdownVisible=false;channelDropdownVisible=false;scoreDropdownVisible=false;"></i>
+                  <div [hidden]="!reportDatePicker">
+                    <ngbd-datepicker-range class="position-absolute d-block" [currentDates]="reportDateModel" (emitDateSelection)="onReportFilterChange($event)"></ngbd-datepicker-range>
+                  </div>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tipListTableBody">
+            @for (tip of orderbyCast(filteredTips | orderBy:sortKey:sortReverse) | slice:((currentPage - 1) * itemsPerPage):((currentPage - 1) * itemsPerPage + itemsPerPage); let index = $index; track tip) {
+              <tr id="tip-{{index}}" [ngClass]="[tip.updated ? 'fw-bold' : '', isSelected(tip.id) ? 'selectedTip' : '', !tip.accessible ? 'disabled' : '', 'report-status-' + tip.status, 'report-substatus-' + tip.substatus]" class="tip-action-open"  >
+                @if (appDataService.public.contexts.length > 1) {
+                  <td class="TipInfoContext">{{tip.context_name}}</td>
+                }
+                <td class="TipInfoLabel">{{tip.label1}}</td>
+                <td class="TipInfoLabel">{{tip.label2}}</td>
+                <td class="TipInfoLabel">{{tip.label3}}</td>
+                <td class="TipInfoLabel">{{tip.label4}}</td>
+                <td class="TipInfoLabel">{{tip.label5}}</td>
+                <td class="TipInfoLabel">{{tip.label6}}</td>
+                <td class="TipInfoLabel">{{tip.creation_date | date:'yyyy-MM-dd'}}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        @if (filteredTips.length > itemsPerPage) {
+          <div class="text-center">
+              <ngb-pagination dir="ltr" class="d-flex justify-content-center" [collectionSize]="filteredTips.length" [(page)]="currentPage" [pageSize]="itemsPerPage">
+                  <ng-template ngbPaginationFirst><i class="fa-solid fa-backward-fast" ngbTooltip="{{'First' | translate}}"></i></ng-template>
+                  <ng-template ngbPaginationPrevious><i class="fa-solid fa-backward-step" ngbTooltip="{{'Previous' | translate}}"></i></ng-template>
+                  <ng-template ngbPaginationNext><i class="fa-solid fa-forward-step" ngbTooltip="{{'Next' | translate}}"></i></ng-template>
+                  <ng-template ngbPaginationLast><i class="fa-solid fa-forward-fast" ngbTooltip="{{'Last' | translate}}"></i></ng-template>
+                  <ng-template ngbPaginationFirst><i class="fa-solid fa-backward-fast" ngbTooltip="{{'First' | translate}}"></i></ng-template>
+                  <ng-template ngbPaginationPrevious><i class="fa-solid fa-backward-step" ngbTooltip="{{'Previous' | translate}}"></i></ng-template>
+                  <ng-template ngbPaginationNext><i class="fa-solid fa-forward-step" ngbTooltip="{{'Next' | translate}}"></i></ng-template>
+                  <ng-template ngbPaginationLast><i class="fa-solid fa-forward-fast" ngbTooltip="{{'Last' | translate}}"></i></ng-template>
+              </ngb-pagination>
+          </div>
+        }
+      </div>
+    </div>
+  }
 </div>
