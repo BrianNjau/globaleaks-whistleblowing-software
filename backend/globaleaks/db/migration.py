@@ -82,7 +82,6 @@ migration_mapping = OrderedDict([
     ('Tenant', [Tenant_v_52, models._Tenant, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
     ('User', [User_v_52, User_v_54, 0, User_v_56, 0, User_v_61, 0, 0, 0, 0, User_v_64, 0, 0, User_v_66, 0, models._User, 0]),
     ('WhistleblowerFile', [WhistleblowerFile_v_57, 0, 0, 0, 0, 0, WhistleblowerFile_v_64, 0, 0, 0, 0, 0, 0, WhistleblowerFile_v_66, 0, models._WhistleblowerFile, 0]),
-
     ('WhistleblowerTip', [WhistleblowerTip_v_59, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1])
 ])
 
@@ -176,8 +175,6 @@ def perform_migration(version):
 
     new_db_file = os.path.abspath(os.path.join(tmpdir, 'new.db'))
     session_new = None
-
-    Settings.enable_input_length_checks = False
 
     try:
         while version < DATABASE_VERSION:
@@ -282,9 +279,8 @@ for i in range(DATABASE_VERSION - FIRST_DATABASE_VERSION_SUPPORTED + 1):
         x = get_right_model(migration_mapping, k,
                             FIRST_DATABASE_VERSION_SUPPORTED + i)
         if x is not None:
-            class y(x, Bases[i]):
-                pass
-
+            class_name = f"MigrationModel_{k}_v{FIRST_DATABASE_VERSION_SUPPORTED + i}"
+            y = type(class_name, (x, Bases[i]), {})
             mp[k].append(y)
         else:
             mp[k].append(None)
