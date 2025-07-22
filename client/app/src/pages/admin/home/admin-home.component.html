@@ -8,7 +8,7 @@
         </div>
       </ng-template>
     </li>
-    <li [ngbNavItem]="1">
+    <!-- <li [ngbNavItem]="1">
       <button ngbNavLink [attr.data-cy]="'changelog'">
         @if (nodeResolver.dataModel.update_available) {
           <i class="fa-solid fa-exclamation-sign text-danger"></i>
@@ -23,15 +23,15 @@
           <div class="tos-text">{{ nodeResolver.dataModel.changelog }}</div>
         </div>
       </ng-template>
-    </li>
-    <li [ngbNavItem]="2">
+    </li> -->
+    <!-- <li [ngbNavItem]="2">
       <button ngbNavLink [attr.data-cy]="'license'">{{ 'License' | translate }}</button>
       <ng-template ngbNavContent>
         <div class="tab-content">
           <div class="tos-text">{{ nodeResolver.dataModel.license }}</div>
         </div>
       </ng-template>
-    </li>
+    </li> -->
   </ul>
   <div [ngbNavOutlet]="nav" class="mt-2"></div>
 </div>

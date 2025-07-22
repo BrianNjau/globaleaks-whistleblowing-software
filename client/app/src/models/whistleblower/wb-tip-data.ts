@@ -33,6 +33,13 @@ export class WbTipData {
   receivers_by_id: ReceiversById;
   submissionStatusStr: string;
   label: string;
+    // New label properties
+    label1: string;
+    label2: string;
+    label3: string;
+    label4: string;
+    label5: string;
+    label6: string;
   fields: Children[];
   whistleblower_identity_field: Children;
   answers: Answers;

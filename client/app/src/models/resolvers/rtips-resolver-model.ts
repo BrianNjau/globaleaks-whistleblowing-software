@@ -16,6 +16,13 @@ export interface rtipResolverModel {
   subscription: number;
   important: boolean;
   label: string;
+  // Add label properties
+  label1: string;
+  label2: string;
+  label3: string;
+  label4: string;
+  label5: string;
+  label6: string;
   updated: boolean;
   context_id: string;
   tor: boolean;

@@ -41,6 +41,13 @@ export class RecieverTipData {
   custodian: boolean;
   important: boolean;
   label: string;
+  // Add label properties
+  label1: string;
+  label2: string;
+  label3: string;
+  label4: string;
+  label5: string;
+  label6: string;
   enable_notifications: boolean;
   iar: IarData;
   context: Context;

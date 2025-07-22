@@ -92,6 +92,12 @@ export class TipComponent implements OnInit {
   tip: RecieverTipData;
   score: number;
   ctx: string;
+  showEditLabelInput1: boolean;
+  showEditLabelInput2: boolean;
+  showEditLabelInput3: boolean;
+  showEditLabelInput4: boolean;
+  showEditLabelInput5: boolean;
+  showEditLabelInput6: boolean;
   showEditLabelInput: boolean;
   active: string;
   loading = true;
@@ -124,6 +130,12 @@ export class TipComponent implements OnInit {
           this.score = this.tip.score;
           this.ctx = "rtip";
           this.showEditLabelInput = this.tip.label === "";
+          this.showEditLabelInput1 = this.tip.label1 === "";
+          this.showEditLabelInput2 = this.tip.label2 === "";
+          this.showEditLabelInput3 = this.tip.label3 === "";
+          this.showEditLabelInput4 = this.tip.label4 === "";
+          this.showEditLabelInput5 = this.tip.label5 === "";
+          this.showEditLabelInput6 = this.tip.label6 === "";
           this.preprocessTipAnswers(this.tip);
           this.tip.submissionStatusStr = this.utils.getSubmissionStatusText(this.tip.status, this.tip.substatus, this.appDataService.submissionStatuses);
           setTimeout(() => {

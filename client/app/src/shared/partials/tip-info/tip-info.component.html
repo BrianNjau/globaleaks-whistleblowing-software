@@ -1,6 +1,6 @@
 <div id="TipInfoBox" class="card card-default">
   @if (authenticationService.session?.role === 'receiver') {
-    <div class="card-header">
+    <!-- <div class="card-header">
       <div class="row justify-content-between">
         <div class="col-md-12 p-0">
           <div class="float-start">
@@ -8,6 +8,87 @@
               <input id="assignLabelInput" type="text" class="form-control m-0" placeholder="{{'Label' | translate}}" [(ngModel)]="tipService.tip.label" />
               <span class="input-group-append" ngbTooltip="{{'Label the report' | translate}} ">
                 <button id="assignLabelButton" class="btn btn-primary rounded-start-0 m-0" name="tip.label" (click)="updateLabel(tipService.tip.label)">
+                  <i class="fa-solid fa-tag"></i>
+                </button>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+        <div class="card-header">
+      <div class="row justify-content-between">
+        <div class="col-md-12 p-0">
+
+          <div class="label-container">
+            <!-- OG LABEL -->
+            <!-- <span class="input-group ms-1">
+              <input id="assignLabelInput" type="text" class="form-control m-0" placeholder="{{'Label' | translate}}" [(ngModel)]="tipService.tip.label" />
+              <span class="input-group-append" ngbTooltip="{{'Label the report' | translate}} ">
+                <button id="assignLabelButton" class="btn btn-primary rounded-start-0 m-0" name="tip.label" (click)="updateLabel('label',tipService.tip.label)">
+                  <i class="fa-solid fa-tag"></i>
+                </button>
+              </span>
+            </span> -->
+
+
+
+            <!-- Label 1 -->
+            <span class="input-group ">
+              <input id="assignLabelInput1" type="text" class="form-control m-0" placeholder="{{'Site' | translate}}" [(ngModel)]="tipService.tip.label1" />
+              <span class="input-group-append" ngbTooltip="{{'Label the report' | translate}}">
+                <button id="assignLabelButton1" class="btn btn-primary rounded-start-0 m-0" name="tip.label1" (click)="updateLabel('label1', tipService.tip.label1)">
+                  <i class="fa-solid fa-tag"></i>
+                </button>
+              </span>
+            </span>
+
+            <!-- Label 2 -->
+            <span class="input-group ">
+              <input id="assignLabelInput2" type="text" class="form-control m-0" placeholder="{{'Issue type' | translate}}" [(ngModel)]="tipService.tip.label2" />
+              <span class="input-group-append" ngbTooltip="{{'Label the report' | translate}}">
+                <button id="assignLabelButton2" class="btn btn-primary rounded-start-0 m-0" name="tip.label2" (click)="updateLabel('label2', tipService.tip.label2)">
+                  <i class="fa-solid fa-tag"></i>
+                </button>
+              </span>
+            </span>
+
+            <!-- Label 3 -->
+            <span class="input-group ">
+              <input id="assignLabelInput3" type="text" class="form-control m-0" placeholder="{{'Priority' | translate}}" [(ngModel)]="tipService.tip.label3" />
+              <span class="input-group-append" ngbTooltip="{{'Label the report' | translate}}">
+                <button id="assignLabelButton3" class="btn btn-primary rounded-start-0 m-0" name="tip.label3" (click)="updateLabel('label3', tipService.tip.label3)">
+                  <i class="fa-solid fa-tag"></i>
+                </button>
+              </span>
+            </span>
+
+            <!-- Label 4 -->
+            <span class="input-group ">
+              <input id="assignLabelInput4" type="text" class="form-control m-0" placeholder="{{'Substantiated' | translate}}" [(ngModel)]="tipService.tip.label4" />
+              <span class="input-group-append" ngbTooltip="{{'Label the report' | translate}}">
+                <button id="assignLabelButton4" class="btn btn-primary rounded-start-0 m-0" name="tip.label4" (click)="updateLabel('label4', tipService.tip.label4)">
+                  <i class="fa-solid fa-tag"></i>
+                </button>
+              </span>
+            </span>
+
+            <!-- Label 5 -->
+            <span class="input-group ">
+              <input id="assignLabelInput5" type="text" class="form-control m-0" placeholder="{{'Outcome' | translate}}" [(ngModel)]="tipService.tip.label5" />
+              <span class="input-group-append" ngbTooltip="{{'Label the report' | translate}}">
+                <button id="assignLabelButton5" class="btn btn-primary rounded-start-0 m-0" name="tip.label5" (click)="updateLabel('label5', tipService.tip.label5)">
+                  <i class="fa-solid fa-tag"></i>
+                </button>
+              </span>
+            </span>
+
+            <!-- Label 6 -->
+            <span class="input-group ">
+              <input id="assignLabelInput6" type="text" class="form-control m-0" placeholder="{{'Investigator' | translate}}" [(ngModel)]="tipService.tip.label6" />
+              <span class="input-group-append" ngbTooltip="{{'Label the report' | translate}}">
+                <button id="assignLabelButton6" class="btn btn-primary rounded-start-0 m-0" name="tip.label6" (click)="updateLabel('label6', tipService.tip.label6)">
                   <i class="fa-solid fa-tag"></i>
                 </button>
               </span>
@@ -44,10 +125,10 @@
             <i class="fa-solid fa-clock"></i>
             <span>{{'Last update'|translate}}</span>
           </th>
-          <th class="TipInfoExpirationDate">
+          <!-- <th class="TipInfoExpirationDate">
             <i class="fa-solid fa-hourglass"></i>
             <span>{{'Expiration date'|translate}}</span>
-          </th>
+          </th> -->
           @if (authenticationService.session?.role === 'receiver') {
             <th class="TipInfoReminderDate">
               <i class="fa-solid fa-bell"></i>
@@ -97,14 +178,14 @@
             }
             <td class="TipInfoCreationDate">{{tipService.tip.creation_date | date:'dd-MM-yyyy HH:mm'}}</td>
             <td class="TipInfoUpdateDate">{{tipService.tip.update_date | date:'dd-MM-yyyy HH:mm'}}</td>
-            <td class="TipInfoExpirationDate">
+            <!-- <td class="TipInfoExpirationDate">
               @if (!utilsService.isNever(tipService.tip.expiration_date)) {
                 <span>{{tipService.tip.expiration_date | date:'dd-MM-yyyy HH:mm'}}</span>
               }
               @if (utilsService.isNever(tipService.tip.expiration_date)) {
                 <span>-</span>
               }
-            </td>
+            </td> -->
             @if (authenticationService.session?.role === 'receiver') {
               <td class="TipInfoReminderDate">
                 @if (!utilsService.isNever(tipService.tip.reminder_date)) {

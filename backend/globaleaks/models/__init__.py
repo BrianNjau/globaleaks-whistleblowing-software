@@ -641,6 +641,13 @@ class _InternalTip(Model):
     crypto_tip_pub_key = Column(UnicodeText(56), default='', nullable=False)
     crypto_tip_prv_key = Column(UnicodeText(84), default='', nullable=False)
     deprecated_crypto_files_pub_key = Column(UnicodeText(56), default='', nullable=False)
+     # Add new label columns
+    label1 = Column(UnicodeText, default='', nullable=False)
+    label2 = Column(UnicodeText, default='', nullable=False)
+    label3 = Column(UnicodeText, default='', nullable=False)
+    label4 = Column(UnicodeText, default='', nullable=False)
+    label5 = Column(UnicodeText, default='', nullable=False)
+    label6 = Column(UnicodeText, default='', nullable=False)
 
     @declared_attr
     def __table_args__(self):

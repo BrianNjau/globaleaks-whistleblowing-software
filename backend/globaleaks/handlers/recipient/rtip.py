@@ -893,6 +893,31 @@ def set_internaltip_variable(session, tid, user_id, itip_id, key, value):
 
     setattr(itip, key, value)
 
+    if itip.crypto_tip_pub_key and value and key in ['label1']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label2']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label3']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label4']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label5']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+    if itip.crypto_tip_pub_key and value and key in ['label6']:
+        value = Base64Encoder.encode(GCE.asymmetric_encrypt(itip.crypto_tip_pub_key, value))
+
+    setattr(itip, key, value)
+
 
 @transact
 def set_receivertip_variable(session, tid, user_id, itip_id, key, value):

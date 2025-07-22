@@ -92,18 +92,42 @@ def get_receivertips(session, tid, receiver_id, user_key, language, args={}):
                                             .group_by(models.ReceiverTip.id):
         answers = answers.answers
         label = itip.label
+        label1 = itip.label1
+        label2 = itip.label2
+        label3 = itip.label3
+        label4 = itip.label4
+        label5 = itip.label5
+        label6 = itip.label6
         accessible = rtip.receiver_id == receiver_id
         if itip.crypto_tip_pub_key and accessible:
             tip_key = GCE.asymmetric_decrypt(user_key, Base64Encoder.decode(rtip.crypto_tip_prv_key))
 
             if label:
                 label = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label.encode())).decode()
+            if label1:
+                label1 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label1.encode())).decode()
+            if label2:
+                label2 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label2.encode())).decode()
+            if label3:
+                label3 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label3.encode())).decode()
+            if label4:
+                label4 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label4.encode())).decode()
+            if label5:
+                label5 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label5.encode())).decode()
+            if label6:
+                label6 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label6.encode())).decode()
 
             answers = json.loads(GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(answers.encode())).decode())
         elif itip.crypto_tip_pub_key:
             # remove useless and unusable crypted data
             answers = ""
             label = ""
+            label1 = ""
+            label2 = ""
+            label3 = ""
+            label4 = ""
+            label5 = ""
+            label6 = ""
 
         if data is None:
             subscription = 0
@@ -124,6 +148,12 @@ def get_receivertips(session, tid, receiver_id, user_key, language, args={}):
                 'progressive': itip.progressive,
                 'important': itip.important,
                 'label': label,
+                'label1': label1,
+                'label2': label2,
+                'label3': label3,
+                'label4': label4,
+                'label5': label5,
+                'label6': label6,
                 'updated': rtip.last_access < itip.update_date,
                 'context_id': itip.context_id,
                 'tor': itip.tor,
