@@ -267,6 +267,8 @@ def serialize_rtip(session, itip, rtip, language):
     ret['label4'] = itip.label4  # Add label4
     ret['label5'] = itip.label5  # Add label5
     ret['label6'] = itip.label6  # Add label6
+    ret['label7'] = itip.label7  # Add label7
+    ret['label8'] = itip.label8  # Add label8
     ret['enable_notifications'] = rtip.enable_notifications
 
     iar = session.query(models.IdentityAccessRequest) \

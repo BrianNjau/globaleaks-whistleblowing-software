@@ -1,4 +1,4 @@
-import {Data} from "@app/models/receiver/receiver-tip-data";
+import { Data } from "@app/models/receiver/receiver-tip-data";
 
 export interface rtipResolverModel {
   submissionStatusStr: string;
@@ -23,6 +23,8 @@ export interface rtipResolverModel {
   label4: string;
   label5: string;
   label6: string;
+  label7: string;
+  label8: string;
   updated: boolean;
   context_id: string;
   tor: boolean;

@@ -1,6 +1,15 @@
-import {RFile, WbFile, WhistleblowerIdentity, Comment} from "@app/models/app/shared-public-model";
-import {Context, Answers, Questionnaire} from "@app/models/receiver/receiver-tip-data";
-import {RedactionData} from "@app/models/component-model/redaction";
+import {
+  RFile,
+  WbFile,
+  WhistleblowerIdentity,
+  Comment,
+} from "@app/models/app/shared-public-model";
+import {
+  Context,
+  Answers,
+  Questionnaire,
+} from "@app/models/receiver/receiver-tip-data";
+import { RedactionData } from "@app/models/component-model/redaction";
 
 export class WbTipData {
   id: string;
@@ -33,13 +42,15 @@ export class WbTipData {
   receivers_by_id: ReceiversById;
   submissionStatusStr: string;
   label: string;
-    // New label properties
-    label1: string;
-    label2: string;
-    label3: string;
-    label4: string;
-    label5: string;
-    label6: string;
+  // New label properties
+  label1: string;
+  label2: string;
+  label3: string;
+  label4: string;
+  label5: string;
+  label6: string;
+  label7: string;
+  label8: string;
   fields: Children[];
   whistleblower_identity_field: Children;
   answers: Answers;

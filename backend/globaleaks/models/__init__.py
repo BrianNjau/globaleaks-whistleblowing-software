@@ -648,6 +648,8 @@ class _InternalTip(Model):
     label4 = Column(UnicodeText, default='', nullable=False)
     label5 = Column(UnicodeText, default='', nullable=False)
     label6 = Column(UnicodeText, default='', nullable=False)
+    label7 = Column(UnicodeText, default='', nullable=False)
+    label8 = Column(UnicodeText, default='', nullable=False)
     
 
     @declared_attr

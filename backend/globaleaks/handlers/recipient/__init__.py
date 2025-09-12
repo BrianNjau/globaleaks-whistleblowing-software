@@ -98,6 +98,8 @@ def get_receivertips(session, tid, receiver_id, user_key, language, args={}):
         label4 = itip.label4
         label5 = itip.label5
         label6 = itip.label6
+        label7 = itip.label7
+        label8 = itip.label8
         accessible = rtip.receiver_id == receiver_id
         if itip.crypto_tip_pub_key and accessible:
             tip_key = GCE.asymmetric_decrypt(user_key, Base64Encoder.decode(rtip.crypto_tip_prv_key))
@@ -116,6 +118,10 @@ def get_receivertips(session, tid, receiver_id, user_key, language, args={}):
                 label5 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label5.encode())).decode()
             if label6:
                 label6 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label6.encode())).decode()
+            if label7:
+                label7 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label7.encode())).decode()
+            if label8:
+                label8 = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(label8.encode())).decode()
 
             answers = json.loads(GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(answers.encode())).decode())
         elif itip.crypto_tip_pub_key:
@@ -128,6 +134,8 @@ def get_receivertips(session, tid, receiver_id, user_key, language, args={}):
             label4 = ""
             label5 = ""
             label6 = ""
+            label7 = ""
+            label8 = ""
 
         if data is None:
             subscription = 0
@@ -154,6 +162,8 @@ def get_receivertips(session, tid, receiver_id, user_key, language, args={}):
                 'label4': label4,
                 'label5': label5,
                 'label6': label6,
+                'label7': label7,
+                'label8': label8,
                 'updated': rtip.last_access < itip.update_date,
                 'context_id': itip.context_id,
                 'tor': itip.tor,

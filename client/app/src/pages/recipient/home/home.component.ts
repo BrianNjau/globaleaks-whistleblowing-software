@@ -1,28 +1,41 @@
-import {Component, OnInit,HostListener, inject} from "@angular/core";
-import {AppDataService} from "@app/app-data.service";
-import {preferenceResolverModel} from "@app/models/resolvers/preference-resolver-model";
-import {PreferenceResolver} from "@app/shared/resolvers/preference.resolver";
-import {UtilsService} from "@app/shared/services/utils.service";
-import {UserHomeComponent} from "@app/shared/partials/user-home/user-home.component";
+import { Component, OnInit, HostListener, inject } from "@angular/core";
+import { AppDataService } from "@app/app-data.service";
+import { preferenceResolverModel } from "@app/models/resolvers/preference-resolver-model";
+import { PreferenceResolver } from "@app/shared/resolvers/preference.resolver";
+import { UtilsService } from "@app/shared/services/utils.service";
+import { UserHomeComponent } from "@app/shared/partials/user-home/user-home.component";
 import { RTipsResolver } from "@app/shared/resolvers/r-tips-resolver.service";
 import { rtipResolverModel } from "@app/models/resolvers/rtips-resolver-model";
 import { FormsModule } from "@angular/forms"; // Import FormsModule
 import { NgClass } from "@angular/common"; // Import NgClass
-import { IDropdownSettings,NgMultiSelectDropDownModule } from "ng-multiselect-dropdown"; // Import NgMultiSelectDropDownModule 
+import {
+  IDropdownSettings,
+  NgMultiSelectDropDownModule,
+} from "ng-multiselect-dropdown"; // Import NgMultiSelectDropDownModule
 import { SlicePipe, DatePipe } from "@angular/common"; // Import SlicePipe and DatePipe
-import {TranslatorPipe} from "@app/shared/pipes/translate";
+import { TranslatorPipe } from "@app/shared/pipes/translate";
 import { OrderByPipe } from "@app/shared/pipes/order-by.pipe"; // Import OrderByPipe
-import {NgbDate, NgbModal, NgbPagination, NgbPaginationPrevious, NgbPaginationNext, NgbPaginationFirst, NgbPaginationLast, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbDate,
+  NgbModal,
+  NgbPagination,
+  NgbPaginationPrevious,
+  NgbPaginationNext,
+  NgbPaginationFirst,
+  NgbPaginationLast,
+  NgbTooltipModule,
+} from "@ng-bootstrap/ng-bootstrap";
 import { DateRangeSelectorComponent } from "@app/shared/components/date-selector/date-selector.component"; // Import DateRangeSelectorComponent
-import {TranslateService} from "@ngx-translate/core";
-import {filter, orderBy} from "lodash-es";
+import { TranslateService } from "@ngx-translate/core";
+import { filter, orderBy } from "lodash-es";
 
 @Component({
-    selector: "src-recipient-home",
-    templateUrl: "./home.component.html",
-    standalone: true,
-    imports: [UserHomeComponent,
-      FormsModule,
+  selector: "src-recipient-home",
+  templateUrl: "./home.component.html",
+  standalone: true,
+  imports: [
+    UserHomeComponent,
+    FormsModule,
     NgClass,
     NgMultiSelectDropDownModule,
     NgbPagination,
@@ -35,8 +48,8 @@ import {filter, orderBy} from "lodash-es";
     DatePipe,
     TranslatorPipe,
     OrderByPipe,
-    DateRangeSelectorComponent
-    ]
+    DateRangeSelectorComponent,
+  ],
 })
 export class HomeComponent implements OnInit {
   protected appDataService = inject(AppDataService);
@@ -45,7 +58,6 @@ export class HomeComponent implements OnInit {
   protected RTips = inject(RTipsResolver);
   protected utils = inject(UtilsService);
   private translateService = inject(TranslateService);
-  
 
   preferenceData: preferenceResolverModel;
   selectedTips: string[] = [];
@@ -55,27 +67,34 @@ export class HomeComponent implements OnInit {
   reportDateFilter: [number, number] | null = null;
   updateDateFilter: [number, number] | null = null;
   expiryDateFilter: [number, number] | null = null;
-  reportDateModel: { fromDate: NgbDate | null; toDate: NgbDate | null; } | null = null;
-  updateDateModel: { fromDate: NgbDate | null; toDate: NgbDate | null; } | null = null;
-  expiryDateModel: { fromDate: NgbDate | null; toDate: NgbDate | null; } | null = null;
-  dropdownStatusModel: { id: number; label: string; }[] = [];
-  dropdownStatusData: { id: number; label: string; }[] = [];
-  dropdownContextModel: { id: number; label: string; }[] = [];
-  dropdownContextData: { id: number; label: string; }[] = [];
-  dropdownLabel1Model: { id: number; label: string; }[] = [];
-  dropdownLabel1Data: { id: number; label: string; }[] = [];
-  dropdownLabel2Model: { id: number; label: string; }[] = [];
-  dropdownLabel2Data: { id: number; label: string; }[] = [];
-  dropdownLabel3Model: { id: number; label: string; }[] = [];
-  dropdownLabel3Data: { id: number; label: string; }[] = [];
-  dropdownLabel4Model: { id: number; label: string; }[] = [];
-  dropdownLabel4Data: { id: number; label: string; }[] = [];
-  dropdownLabel5Model: { id: number; label: string; }[] = [];
-  dropdownLabel5Data: { id: number; label: string; }[] = [];
-  dropdownLabel6Model: { id: number; label: string; }[] = [];
-  dropdownLabel6Data: { id: number; label: string; }[] = [];
-  dropdownScoreModel: { id: number; label: string; }[] = [];
-  dropdownScoreData: { id: number; label: string; }[] = [];
+  reportDateModel: { fromDate: NgbDate | null; toDate: NgbDate | null } | null =
+    null;
+  updateDateModel: { fromDate: NgbDate | null; toDate: NgbDate | null } | null =
+    null;
+  expiryDateModel: { fromDate: NgbDate | null; toDate: NgbDate | null } | null =
+    null;
+  dropdownStatusModel: { id: number; label: string }[] = [];
+  dropdownStatusData: { id: number; label: string }[] = [];
+  dropdownContextModel: { id: number; label: string }[] = [];
+  dropdownContextData: { id: number; label: string }[] = [];
+  dropdownLabel1Model: { id: number; label: string }[] = [];
+  dropdownLabel1Data: { id: number; label: string }[] = [];
+  dropdownLabel2Model: { id: number; label: string }[] = [];
+  dropdownLabel2Data: { id: number; label: string }[] = [];
+  dropdownLabel3Model: { id: number; label: string }[] = [];
+  dropdownLabel3Data: { id: number; label: string }[] = [];
+  dropdownLabel4Model: { id: number; label: string }[] = [];
+  dropdownLabel4Data: { id: number; label: string }[] = [];
+  dropdownLabel5Model: { id: number; label: string }[] = [];
+  dropdownLabel5Data: { id: number; label: string }[] = [];
+  dropdownLabel6Model: { id: number; label: string }[] = [];
+  dropdownLabel6Data: { id: number; label: string }[] = [];
+  dropdownLabel7Model: { id: number; label: string }[] = [];
+  dropdownLabel7Data: { id: number; label: string }[] = [];
+  dropdownLabel8Model: { id: number; label: string }[] = [];
+  dropdownLabel8Data: { id: number; label: string }[] = [];
+  dropdownScoreModel: { id: number; label: string }[] = [];
+  dropdownScoreData: { id: number; label: string }[] = [];
   sortKey: string = "creation_date";
   sortReverse: boolean = true;
   channelDropdownVisible: boolean = false;
@@ -85,6 +104,8 @@ export class HomeComponent implements OnInit {
   label4DropdownVisible: boolean = false;
   label5DropdownVisible: boolean = false;
   label6DropdownVisible: boolean = false;
+  label7DropdownVisible: boolean = false;
+  label8DropdownVisible: boolean = false;
   statusDropdownVisible: boolean = false;
   scoreDropdownVisible: boolean = false;
   index: number;
@@ -99,10 +120,10 @@ export class HomeComponent implements OnInit {
     allowSearchFilter: true,
     selectAllText: this.translateService.instant("Select all"),
     unSelectAllText: this.translateService.instant("Deselect all"),
-    searchPlaceholderText: this.translateService.instant("Search")
+    searchPlaceholderText: this.translateService.instant("Search"),
   };
 
- ngOnInit(): void {
+  ngOnInit(): void {
     if (this.preference.dataModel) {
       this.preferenceData = this.preference.dataModel;
     }
@@ -111,15 +132,18 @@ export class HomeComponent implements OnInit {
       console.log("RTips.dataModel:", this.RTips.dataModel);
       this.processTips();
     }
-    if (this.appDataService.public.node.user_privacy_policy_text && this.preferenceData.accepted_privacy_policy === "1970-01-01T00:00:00Z") {
-     this.utilsService.acceptPrivacyPolicyDialog().subscribe();
+    if (
+      this.appDataService.public.node.user_privacy_policy_text &&
+      this.preferenceData.accepted_privacy_policy === "1970-01-01T00:00:00Z"
+    ) {
+      this.utilsService.acceptPrivacyPolicyDialog().subscribe();
     }
   }
   selectAll() {
     this.selectedTips = [];
-    this.filteredTips.forEach(tip => {
+    this.filteredTips.forEach((tip) => {
       if (tip.accessible) {
-      this.selectedTips.push(tip.id);
+        this.selectedTips.push(tip.id);
       }
     });
   }
@@ -147,45 +171,90 @@ export class HomeComponent implements OnInit {
     for (const tip of this.RTips.dataModel) {
       tip.context = this.appDataService.contexts_by_id[tip.context_id];
       tip.context_name = tip.context.name;
-      tip.submissionStatusStr = this.utils.getSubmissionStatusText(tip.status, tip.substatus, this.appDataService.submissionStatuses);
+      tip.submissionStatusStr = this.utils.getSubmissionStatusText(
+        tip.status,
+        tip.substatus,
+        this.appDataService.submissionStatuses
+      );
       if (!uniqueKeys.includes(tip.submissionStatusStr)) {
         uniqueKeys.push(tip.submissionStatusStr);
-        this.dropdownStatusData.push({id: this.dropdownStatusData.length + 1, label: tip.submissionStatusStr});
+        this.dropdownStatusData.push({
+          id: this.dropdownStatusData.length + 1,
+          label: tip.submissionStatusStr,
+        });
       }
       if (!uniqueKeys.includes(tip.context_name)) {
         uniqueKeys.push(tip.context_name);
-        this.dropdownContextData.push({id: this.dropdownContextData.length + 1, label: tip.context_name});
+        this.dropdownContextData.push({
+          id: this.dropdownContextData.length + 1,
+          label: tip.context_name,
+        });
       }
       if (!uniqueKeys.includes(tip.label1)) {
         uniqueKeys.push(tip.label1);
-        this.dropdownLabel1Data.push({id: this.dropdownLabel1Data.length + 1, label: tip.label1});
+        this.dropdownLabel1Data.push({
+          id: this.dropdownLabel1Data.length + 1,
+          label: tip.label1,
+        });
       }
       if (!uniqueKeys.includes(tip.label2)) {
         uniqueKeys.push(tip.label2);
-        this.dropdownLabel2Data.push({id: this.dropdownLabel2Data.length + 1, label: tip.label2});
+        this.dropdownLabel2Data.push({
+          id: this.dropdownLabel2Data.length + 1,
+          label: tip.label2,
+        });
       }
       if (!uniqueKeys.includes(tip.label3)) {
         uniqueKeys.push(tip.label3);
-        this.dropdownLabel3Data.push({id: this.dropdownLabel3Data.length + 1, label: tip.label3});
+        this.dropdownLabel3Data.push({
+          id: this.dropdownLabel3Data.length + 1,
+          label: tip.label3,
+        });
       }
       if (!uniqueKeys.includes(tip.label4)) {
         uniqueKeys.push(tip.label4);
-        this.dropdownLabel4Data.push({id: this.dropdownLabel4Data.length + 1, label: tip.label4});
+        this.dropdownLabel4Data.push({
+          id: this.dropdownLabel4Data.length + 1,
+          label: tip.label4,
+        });
       }
       if (!uniqueKeys.includes(tip.label5)) {
         uniqueKeys.push(tip.label5);
-        this.dropdownLabel5Data.push({id: this.dropdownLabel5Data.length + 1, label: tip.label5});
+        this.dropdownLabel5Data.push({
+          id: this.dropdownLabel5Data.length + 1,
+          label: tip.label5,
+        });
       }
       if (!uniqueKeys.includes(tip.label6)) {
         uniqueKeys.push(tip.label6);
-        this.dropdownLabel6Data.push({id: this.dropdownLabel6Data.length + 1, label: tip.label6});
+        this.dropdownLabel6Data.push({
+          id: this.dropdownLabel6Data.length + 1,
+          label: tip.label6,
+        });
+      }
+      if (!uniqueKeys.includes(tip.label7)) {
+        uniqueKeys.push(tip.label7);
+        this.dropdownLabel7Data.push({
+          id: this.dropdownLabel7Data.length + 1,
+          label: tip.label7,
+        });
+      }
+      if (!uniqueKeys.includes(tip.label8)) {
+        uniqueKeys.push(tip.label8);
+        this.dropdownLabel8Data.push({
+          id: this.dropdownLabel8Data.length + 1,
+          label: tip.label8,
+        });
       }
 
       const scoreLabel = this.maskScore(tip.score);
 
       if (!uniqueKeys.includes(scoreLabel)) {
         uniqueKeys.push(scoreLabel);
-        this.dropdownScoreData.push({id: this.dropdownScoreData.length + 1, label: scoreLabel});
+        this.dropdownScoreData.push({
+          id: this.dropdownScoreData.length + 1,
+          label: scoreLabel,
+        });
       }
     }
   }
@@ -201,7 +270,7 @@ export class HomeComponent implements OnInit {
     }
   }
   //review this
-  onChanged(model: { id: number; label: string; }[], type: string) {
+  onChanged(model: { id: number; label: string }[], type: string) {
     this.processTips();
     if (model.length > 0 && type === "Score") {
       this.dropdownLabel1Model = [];
@@ -226,6 +295,8 @@ export class HomeComponent implements OnInit {
       this.dropdownLabel4Model = [];
       this.dropdownLabel5Model = [];
       this.dropdownLabel6Model = [];
+      this.dropdownLabel7Model = [];
+      this.dropdownLabel8Model = [];
     }
     if (model.length > 0 && type === "Label1") {
       this.dropdownStatusModel = [];
@@ -237,6 +308,8 @@ export class HomeComponent implements OnInit {
       this.dropdownLabel4Model = [];
       this.dropdownLabel5Model = [];
       this.dropdownLabel6Model = [];
+      this.dropdownLabel7Model = [];
+      this.dropdownLabel8Model = [];
     }
     if (model.length > 0 && type === "Label2") {
       this.dropdownStatusModel = [];
@@ -248,6 +321,8 @@ export class HomeComponent implements OnInit {
       this.dropdownLabel4Model = [];
       this.dropdownLabel5Model = [];
       this.dropdownLabel6Model = [];
+      this.dropdownLabel7Model = [];
+      this.dropdownLabel8Model = [];
     }
     if (model.length > 0 && type === "Label3") {
       this.dropdownStatusModel = [];
@@ -259,6 +334,8 @@ export class HomeComponent implements OnInit {
       this.dropdownLabel4Model = [];
       this.dropdownLabel5Model = [];
       this.dropdownLabel6Model = [];
+      this.dropdownLabel7Model = [];
+      this.dropdownLabel8Model = [];
     }
     if (model.length > 0 && type === "Label4") {
       this.dropdownStatusModel = [];
@@ -270,6 +347,8 @@ export class HomeComponent implements OnInit {
       this.dropdownLabel4Model = model;
       this.dropdownLabel5Model = [];
       this.dropdownLabel6Model = [];
+      this.dropdownLabel7Model = [];
+      this.dropdownLabel8Model = [];
     }
     if (model.length > 0 && type === "Label5") {
       this.dropdownStatusModel = [];
@@ -281,6 +360,8 @@ export class HomeComponent implements OnInit {
       this.dropdownLabel4Model = [];
       this.dropdownLabel5Model = model;
       this.dropdownLabel6Model = [];
+      this.dropdownLabel7Model = [];
+      this.dropdownLabel8Model = [];
     }
     if (model.length > 0 && type === "Label6") {
       this.dropdownStatusModel = [];
@@ -292,14 +373,42 @@ export class HomeComponent implements OnInit {
       this.dropdownLabel4Model = [];
       this.dropdownLabel5Model = [];
       this.dropdownLabel6Model = model;
+      this.dropdownLabel7Model = [];
+      this.dropdownLabel8Model = [];
+    }
+    if (model.length > 0 && type === "Label7") {
+      this.dropdownStatusModel = [];
+      this.dropdownScoreModel = [];
+      this.dropdownContextModel = [];
+      this.dropdownLabel1Model = [];
+      this.dropdownLabel2Model = [];
+      this.dropdownLabel3Model = [];
+      this.dropdownLabel4Model = [];
+      this.dropdownLabel5Model = [];
+      this.dropdownLabel6Model = [];
+      this.dropdownLabel7Model = model;
+      this.dropdownLabel8Model = [];
+    }
+    if (model.length > 0 && type === "Label8") {
+      this.dropdownStatusModel = [];
+      this.dropdownScoreModel = [];
+      this.dropdownContextModel = [];
+      this.dropdownLabel1Model = [];
+      this.dropdownLabel2Model = [];
+      this.dropdownLabel3Model = [];
+      this.dropdownLabel4Model = [];
+      this.dropdownLabel5Model = [];
+      this.dropdownLabel6Model = [];
+      this.dropdownLabel7Model = [];
+      this.dropdownLabel8Model = model;
     }
     this.applyFilter();
   }
   //
 
-  checkFilter(filter: { id: number; label: string; }[]) {
+  checkFilter(filter: { id: number; label: string }[]) {
     return filter.length > 0;
-  };
+  }
 
   toggleChannelDropdown() {
     this.channelDropdownVisible = !this.channelDropdownVisible;
@@ -378,107 +487,222 @@ export class HomeComponent implements OnInit {
     this.lastUpdatePicker = false;
     this.expirationDatePicker = false;
   }
+  toggleLabel7Dropdown() {
+    this.label7DropdownVisible = !this.label7DropdownVisible;
+    this.label6DropdownVisible = false;
+    this.label5DropdownVisible = false;
+    this.label4DropdownVisible = false;
+    this.label3DropdownVisible = false;
+    this.label2DropdownVisible = false;
+    this.label1DropdownVisible = false;
+    this.channelDropdownVisible = false;
+    this.statusDropdownVisible = false;
+    this.scoreDropdownVisible = false;
+    this.reportDatePicker = false;
+    this.lastUpdatePicker = false;
+    this.expirationDatePicker = false;
+  }
+  toggleLabel8Dropdown() {
+    this.label8DropdownVisible = !this.label8DropdownVisible;
+    this.label7DropdownVisible = false;
+    this.label6DropdownVisible = false;
+    this.label5DropdownVisible = false;
+    this.label4DropdownVisible = false;
+    this.label3DropdownVisible = false;
+    this.label2DropdownVisible = false;
+    this.label1DropdownVisible = false;
+    this.channelDropdownVisible = false;
+    this.statusDropdownVisible = false;
+    this.scoreDropdownVisible = false;
+    this.reportDatePicker = false;
+    this.lastUpdatePicker = false;
+    this.expirationDatePicker = false;
+  }
 
-    onSearchChange(search: string | number | undefined) {
-      search = String(search);
-  
-      if (typeof search !== "undefined") {
-        this.currentPage = 1;
-        this.filteredTips = this.RTips.dataModel;
-        this.processTips();
-  
-        this.filteredTips = orderBy(filter(this.filteredTips, (tip) => {
+  onSearchChange(search: string | number | undefined) {
+    search = String(search);
+
+    if (typeof search !== "undefined") {
+      this.currentPage = 1;
+      this.filteredTips = this.RTips.dataModel;
+      this.processTips();
+
+      this.filteredTips = orderBy(
+        filter(this.filteredTips, (tip) => {
           return this.utils.searchInObject(tip, search);
-        }), "update_date");
-      }
+        }),
+        "update_date"
+      );
     }
-  
-    orderbyCast(data: rtipResolverModel[]): rtipResolverModel[] {
-      return data;
+  }
+
+  orderbyCast(data: rtipResolverModel[]): rtipResolverModel[] {
+    return data;
+  }
+
+  onReportFilterChange(event: {
+    fromDate: string | null;
+    toDate: string | null;
+  }) {
+    this.processTips();
+    const { fromDate, toDate } = event;
+    if (!fromDate && !toDate) {
+      this.reportDateFilter = null;
+      this.closeAllDatePickers();
     }
-
-
-    onReportFilterChange(event: { fromDate: string | null; toDate: string | null }) {
-      this.processTips();
-      const {fromDate, toDate} = event;
-      if (!fromDate && !toDate) {
-        this.reportDateFilter = null;
-        this.closeAllDatePickers();
-      }
-      if (fromDate && toDate) {
-        this.reportDateFilter = [new Date(fromDate).getTime(), new Date(toDate).getTime()];
-      }
-      this.applyFilter();
+    if (fromDate && toDate) {
+      this.reportDateFilter = [
+        new Date(fromDate).getTime(),
+        new Date(toDate).getTime(),
+      ];
     }
+    this.applyFilter();
+  }
 
-    onUpdateFilterChange(event: { fromDate: string | null; toDate: string | null }) {
-      this.processTips();
-      const {fromDate, toDate} = event;
-      if (!fromDate && !toDate) {
-        this.updateDateFilter = null;
-        this.closeAllDatePickers();
-      }
-      if (fromDate && toDate) {
-        this.updateDateFilter = [new Date(fromDate).getTime(), new Date(toDate).getTime()];
-      }
-      this.applyFilter();
+  onUpdateFilterChange(event: {
+    fromDate: string | null;
+    toDate: string | null;
+  }) {
+    this.processTips();
+    const { fromDate, toDate } = event;
+    if (!fromDate && !toDate) {
+      this.updateDateFilter = null;
+      this.closeAllDatePickers();
     }
-
-    onExpiryFilterChange(event: { fromDate: string | null; toDate: string | null }) {
-      this.processTips();
-      const {fromDate, toDate} = event;
-      if (!fromDate && !toDate) {
-        this.expiryDateFilter = null;
-        this.closeAllDatePickers();
-      }
-      if (fromDate && toDate) {
-        this.expiryDateFilter = [new Date(fromDate).getTime(), new Date(toDate).getTime()];
-      }
-      this.applyFilter();
+    if (fromDate && toDate) {
+      this.updateDateFilter = [
+        new Date(fromDate).getTime(),
+        new Date(toDate).getTime(),
+      ];
     }
+    this.applyFilter();
+  }
 
-    applyFilter() {
-      this.filteredTips = this.utils.getStaticFilter(this.RTips.dataModel, this.dropdownStatusModel, "submissionStatusStr", this.translateService);
-      this.filteredTips = this.utils.getStaticFilter(this.filteredTips, this.dropdownContextModel, "context_name", this.translateService);
-      this.filteredTips = this.utils.getStaticFilter(this.filteredTips, this.dropdownScoreModel, "score", this.translateService);
-      this.filteredTips = this.utils.getDateFilter(this.filteredTips, this.reportDateFilter, this.updateDateFilter, this.expiryDateFilter);
-      // Apply label filters
-      this.filteredTips = this.utils.getStaticFilter(this.filteredTips, this.dropdownLabel1Model, "label1", this.translateService);
-      this.filteredTips = this.utils.getStaticFilter(this.filteredTips, this.dropdownLabel2Model, "label2", this.translateService);
-      this.filteredTips = this.utils.getStaticFilter(this.filteredTips, this.dropdownLabel3Model, "label3", this.translateService);
-      this.filteredTips = this.utils.getStaticFilter(this.filteredTips, this.dropdownLabel4Model, "label4", this.translateService);
-      this.filteredTips = this.utils.getStaticFilter(this.filteredTips, this.dropdownLabel5Model, "label5", this.translateService);
-      this.filteredTips = this.utils.getStaticFilter(this.filteredTips, this.dropdownLabel6Model, "label6", this.translateService);
+  onExpiryFilterChange(event: {
+    fromDate: string | null;
+    toDate: string | null;
+  }) {
+    this.processTips();
+    const { fromDate, toDate } = event;
+    if (!fromDate && !toDate) {
+      this.expiryDateFilter = null;
+      this.closeAllDatePickers();
     }
+    if (fromDate && toDate) {
+      this.expiryDateFilter = [
+        new Date(fromDate).getTime(),
+        new Date(toDate).getTime(),
+      ];
+    }
+    this.applyFilter();
+  }
 
-      @HostListener("document:click", ["$event"])
-      onClick(event: MouseEvent) {
-        const clickedElement = event.target as HTMLElement;
-        const isContainerClicked = clickedElement.classList.contains("ngb-datepicker-container") || clickedElement.classList.contains("dropdown-multi-select-container") ||
-          clickedElement.closest(".ngb-datepicker-container") !== null || clickedElement.closest(".dropdown-multi-select-container") !== null;
-        if (!isContainerClicked) {
-          this.closeAllDatePickers();
-        }
-      }
-  
+  applyFilter() {
+    this.filteredTips = this.utils.getStaticFilter(
+      this.RTips.dataModel,
+      this.dropdownStatusModel,
+      "submissionStatusStr",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownContextModel,
+      "context_name",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownScoreModel,
+      "score",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getDateFilter(
+      this.filteredTips,
+      this.reportDateFilter,
+      this.updateDateFilter,
+      this.expiryDateFilter
+    );
+    // Apply label filters
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownLabel1Model,
+      "label1",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownLabel2Model,
+      "label2",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownLabel3Model,
+      "label3",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownLabel4Model,
+      "label4",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownLabel5Model,
+      "label5",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownLabel6Model,
+      "label6",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownLabel7Model,
+      "label7",
+      this.translateService
+    );
+    this.filteredTips = this.utils.getStaticFilter(
+      this.filteredTips,
+      this.dropdownLabel8Model,
+      "label8",
+      this.translateService
+    );
+  }
 
+  @HostListener("document:click", ["$event"])
+  onClick(event: MouseEvent) {
+    const clickedElement = event.target as HTMLElement;
+    const isContainerClicked =
+      clickedElement.classList.contains("ngb-datepicker-container") ||
+      clickedElement.classList.contains("dropdown-multi-select-container") ||
+      clickedElement.closest(".ngb-datepicker-container") !== null ||
+      clickedElement.closest(".dropdown-multi-select-container") !== null;
+    if (!isContainerClicked) {
+      this.closeAllDatePickers();
+    }
+  }
 
-      closeAllDatePickers() {
-        this.reportDatePicker = false;
-        this.lastUpdatePicker = false;
-        this.expirationDatePicker = false;
-        this.scoreDropdownVisible = false;
-        this.channelDropdownVisible = false;
-        this.statusDropdownVisible = false;
-        this.reportDatePicker = false;
-        this.lastUpdatePicker = false;
-        this.expirationDatePicker = false;
-        this.label1DropdownVisible = false;
-        this.label2DropdownVisible = false;
-        this.label3DropdownVisible = false;
-        this.label4DropdownVisible = false;
-        this.label5DropdownVisible = false;
-        this.label6DropdownVisible = false;
-      }
-
+  closeAllDatePickers() {
+    this.reportDatePicker = false;
+    this.lastUpdatePicker = false;
+    this.expirationDatePicker = false;
+    this.scoreDropdownVisible = false;
+    this.channelDropdownVisible = false;
+    this.statusDropdownVisible = false;
+    this.reportDatePicker = false;
+    this.lastUpdatePicker = false;
+    this.expirationDatePicker = false;
+    this.label1DropdownVisible = false;
+    this.label2DropdownVisible = false;
+    this.label3DropdownVisible = false;
+    this.label4DropdownVisible = false;
+    this.label5DropdownVisible = false;
+    this.label6DropdownVisible = false;
+    this.label7DropdownVisible = false;
+    this.label8DropdownVisible = false;
+  }
 }

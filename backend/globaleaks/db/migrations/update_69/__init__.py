@@ -42,6 +42,8 @@ class InternalTip_v_68(Model):
     label4 = Column(UnicodeText, default='', nullable=False)
     label5 = Column(UnicodeText, default='', nullable=False)
     label6 = Column(UnicodeText, default='', nullable=False)
+    label7 = Column(UnicodeText, default='', nullable=False)
+    label8 = Column(UnicodeText, default='', nullable=False)
 
 
 class MigrationScript(MigrationBase):
@@ -61,5 +63,7 @@ class MigrationScript(MigrationBase):
             new_obj.label4 = ''
             new_obj.label5 = ''
             new_obj.label6 = ''
+            new_obj.label7 = ''
+            new_obj.label8 = ''
 
             self.session_new.add(new_obj)

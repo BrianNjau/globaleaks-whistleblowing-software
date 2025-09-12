@@ -5,10 +5,10 @@ import {
   RFile,
   WbFile,
   WhistleblowerIdentity,
-  Comment
+  Comment,
 } from "@app/models/app/shared-public-model";
-import {IarData} from "@app/models/receiver/iar-data";
-import {RedactionData} from "@app/models/component-model/redaction";
+import { IarData } from "@app/models/receiver/iar-data";
+import { RedactionData } from "@app/models/component-model/redaction";
 
 export interface Questionnaire {
   steps: Step[];
@@ -48,6 +48,8 @@ export class RecieverTipData {
   label4: string;
   label5: string;
   label6: string;
+  label7: string;
+  label8: string;
   enable_notifications: boolean;
   iar: IarData;
   context: Context;
@@ -101,7 +103,6 @@ export interface Context {
   description: string;
   questionnaire: Questionnaire;
 }
-
 
 export interface MsgReceiversSelector {
   key: string;
