@@ -1,22 +1,29 @@
-import {Component, Input, inject} from "@angular/core";
-import {AuthenticationService} from "@app/services/helper/authentication.service";
-import {WbtipService} from "@app/services/helper/wbtip.service";
-import {AppDataService} from "@app/app-data.service";
-import {UtilsService} from "@app/shared/services/utils.service";
-import {ReceiverTipService} from "@app/services/helper/receiver-tip.service";
-import {HttpService} from "@app/shared/services/http.service";
-import {DatePipe} from "@angular/common";
-import {FormsModule} from "@angular/forms";
-import {TranslateModule} from "@ngx-translate/core";
-import {TranslatorPipe} from "@app/shared/pipes/translate";
-import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
-
+import { Component, Input, inject } from "@angular/core";
+import { AuthenticationService } from "@app/services/helper/authentication.service";
+import { WbtipService } from "@app/services/helper/wbtip.service";
+import { AppDataService } from "@app/app-data.service";
+import { UtilsService } from "@app/shared/services/utils.service";
+import { ReceiverTipService } from "@app/services/helper/receiver-tip.service";
+import { HttpService } from "@app/shared/services/http.service";
+import { DatePipe } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { TranslateModule } from "@ngx-translate/core";
+import { TranslatorPipe } from "@app/shared/pipes/translate";
+import { NgbTooltipModule } from "@ng-bootstrap/ng-bootstrap";
+import { YearlyReportIDPipe } from "@app/shared/pipes/yearly-report-id.pipe";
 
 @Component({
-    selector: "src-tip-info",
-    templateUrl: "./tip-info.component.html",
-    standalone: true,
-    imports: [FormsModule, DatePipe, NgbTooltipModule, TranslateModule, TranslatorPipe]
+  selector: "src-tip-info",
+  templateUrl: "./tip-info.component.html",
+  standalone: true,
+  imports: [
+    FormsModule,
+    DatePipe,
+    NgbTooltipModule,
+    TranslateModule,
+    TranslatorPipe,
+    YearlyReportIDPipe,
+  ],
 })
 export class TipInfoComponent {
   protected authenticationService = inject(AuthenticationService);
@@ -32,16 +39,22 @@ export class TipInfoComponent {
     const report_date = new Date(date);
     const current_date = new Date();
     return current_date > report_date;
-  };
+  }
 
   // updateLabel(label: string) {
   //   this.httpService.tipOperation("set", {"key": "label", "value": label}, this.rTipService.tip.id).subscribe(() => {
   //   });
   // }
-   // Updated method to handle multiple labels
-   updateLabel(labelKey: string, labelValue: string) {
-    this.httpService.tipOperation("set", {"key": labelKey, "value": labelValue}, this.rTipService.tip.id).subscribe(() => {
-      console.log(`Label ${labelKey} updated successfully.`);
-    });
+  // Updated method to handle multiple labels
+  updateLabel(labelKey: string, labelValue: string) {
+    this.httpService
+      .tipOperation(
+        "set",
+        { key: labelKey, value: labelValue },
+        this.rTipService.tip.id
+      )
+      .subscribe(() => {
+        console.log(`Label ${labelKey} updated successfully.`);
+      });
   }
 }

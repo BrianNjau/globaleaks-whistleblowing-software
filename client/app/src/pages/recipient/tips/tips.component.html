@@ -560,7 +560,12 @@
             ></i>
             }
           </td>
-          <td class="TipInfoID">{{ tip.progressive }}</td>
+          <td class="TipInfoID">
+            {{
+              tip.progressive
+                | yearlyReportID : tip.creation_date : RTips.dataModel
+            }}
+          </td>
           @if (appDataService.public.contexts.length > 1) {
           <td class="TipInfoContext">{{ tip.context_name }}</td>
           }

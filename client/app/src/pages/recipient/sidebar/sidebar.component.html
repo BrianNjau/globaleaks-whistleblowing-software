@@ -1,14 +1,44 @@
-<a routerLink="/recipient/home" routerLinkActive="active" id="recipient_home" [ngClass]="{'active': isActive('/recipient/home')}" [attr.aria-current]="isActive('/recipient/home') ? 'page' : 'false'">
+<a
+  routerLink="/recipient/home"
+  routerLinkActive="active"
+  id="recipient_home"
+  [ngClass]="{ active: isActive('/recipient/home') }"
+  [attr.aria-current]="isActive('/recipient/home') ? 'page' : 'false'"
+>
   <i class="fa fa-home me-2"></i>
-  <span>{{'Home' | translate}}</span>
+  <span>{{ "Home" | translate }}</span>
 </a>
-<a routerLink="/recipient/reports" routerLinkActive="active" id="recipient_reports" [ngClass]="{'active': isActive('/recipient/reports')}" [attr.aria-current]="isActive('/recipient/reports') ? 'page' : 'false'">
+<a
+  routerLink="/recipient/reports"
+  routerLinkActive="active"
+  id="recipient_reports"
+  [ngClass]="{ active: isActive('/recipient/reports') }"
+  [attr.aria-current]="isActive('/recipient/reports') ? 'page' : 'false'"
+>
   <i class="fa fa-inbox me-2"></i>
-  <span>{{'Reports' | translate}}</span>
+  <span>{{ "Reports" | translate }}</span>
+</a>
+<a
+  routerLink="/recipient/conflict-of-interest"
+  routerLinkActive="active"
+  id="recipient_conflict_of_interest"
+  [ngClass]="{ active: isActive('/recipient/conflict-of-interest') }"
+  [attr.aria-current]="
+    isActive('/recipient/conflict-of-interest') ? 'page' : 'false'
+  "
+>
+  <i class="fa fa-exclamation-triangle me-2"></i>
+  <span>{{ "Conflict of Interest" | translate }}</span>
 </a>
 @if (preferenceResolver.dataModel.can_edit_general_settings) {
-  <a routerLink="/recipient/settings" routerLinkActive="active" id="recipient_settings" [ngClass]="{'active': isActive('/recipient/settings')}" [attr.aria-current]="isActive('/recipient/settings') ? 'page' : 'false'">
-    <i class="fa-solid fa-sliders me-2"></i>
-    <span>{{'Settings' | translate}}</span>
-  </a>
+<a
+  routerLink="/recipient/settings"
+  routerLinkActive="active"
+  id="recipient_settings"
+  [ngClass]="{ active: isActive('/recipient/settings') }"
+  [attr.aria-current]="isActive('/recipient/settings') ? 'page' : 'false'"
+>
+  <i class="fa-solid fa-sliders me-2"></i>
+  <span>{{ "Settings" | translate }}</span>
+</a>
 }

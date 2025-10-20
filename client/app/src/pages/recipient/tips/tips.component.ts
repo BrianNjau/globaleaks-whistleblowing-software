@@ -35,6 +35,7 @@ import { FormsModule } from "@angular/forms";
 import { DateRangeSelectorComponent } from "@app/shared/components/date-selector/date-selector.component";
 import { TranslatorPipe } from "@app/shared/pipes/translate";
 import { OrderByPipe } from "@app/shared/pipes/order-by.pipe";
+import { YearlyReportIDPipe } from "@app/shared/pipes/yearly-report-id.pipe";
 
 @Component({
   selector: "src-tips",
@@ -56,6 +57,7 @@ import { OrderByPipe } from "@app/shared/pipes/order-by.pipe";
     DatePipe,
     TranslatorPipe,
     OrderByPipe,
+    YearlyReportIDPipe,
   ],
 })
 export class TipsComponent implements OnInit {
@@ -388,12 +390,50 @@ export class TipsComponent implements OnInit {
       this.filteredTips = this.RTips.dataModel;
       this.processTips();
 
-      this.filteredTips = orderBy(
-        filter(this.filteredTips, (tip) => {
-          return this.utils.searchInObject(tip, search);
-        }),
-        "update_date"
-      );
+      // Check if search matches the new format (e.g., "5Y2025")
+      const yearlyIdMatch = search.match(/^(\d+)Y(\d{4})$/i);
+
+      if (yearlyIdMatch) {
+        // User is searching for exact formatted ID like "5Y2025"
+        const [, sequence, year] = yearlyIdMatch;
+        const yearNum = parseInt(year);
+        const seqNum = parseInt(sequence);
+
+        // Find tips from that year
+        const tipsInYear = this.RTips.dataModel
+          .filter(
+            (tip) => new Date(tip.creation_date).getFullYear() === yearNum
+          )
+          .sort((a, b) => a.progressive - b.progressive);
+
+        // Find the tip at the specified sequence position
+        if (tipsInYear[seqNum - 1]) {
+          // Filter to show only this specific tip
+          this.filteredTips = [tipsInYear[seqNum - 1]];
+        } else {
+          // No tip found with that sequence/year combination
+          this.filteredTips = [];
+        }
+      } else {
+        // Regular search - but also check if the formatted ID contains the search term
+        this.filteredTips = orderBy(
+          filter(this.filteredTips, (tip) => {
+            // First, check normal search across all fields
+            if (this.utils.searchInObject(tip, search)) {
+              return true;
+            }
+
+            // Also check if the formatted ID contains the search term
+            // This allows partial searches like "Y2025" to find all 2025 reports
+            const formattedId = this.getFormattedCaseID(
+              tip.progressive,
+              tip.creation_date
+            );
+            return formattedId.toLowerCase().includes(search.toLowerCase());
+          }),
+          "update_date"
+        );
+      }
     }
   }
 
@@ -518,11 +558,28 @@ export class TipsComponent implements OnInit {
     );
   }
 
+  getFormattedCaseID(progressive: number, creationDate: string | Date): string {
+    const date = new Date(creationDate);
+    const year = date.getFullYear();
+
+    const tipsInSameYear = this.filteredTips
+      .filter((tip) => new Date(tip.creation_date).getFullYear() === year)
+      .sort((a, b) => a.progressive - b.progressive);
+
+    const yearSequence =
+      tipsInSameYear.findIndex((tip) => tip.progressive === progressive) + 1;
+
+    return yearSequence > 0
+      ? `${yearSequence}Y${year}`
+      : `${progressive}Y${year}`;
+  }
+
   getDataCsv(): any[] {
     const output = [...this.filteredTips];
     return output.map((tip) => ({
       id: tip.id,
-      progressive: tip.progressive,
+      // progressive: tip.progressive,
+      progressive: this.getFormattedCaseID(tip.progressive, tip.creation_date),
       important: tip.important,
       reportStatus: this.utils.isDatePassed(tip.reminder_date),
       context_name: tip.context_name,

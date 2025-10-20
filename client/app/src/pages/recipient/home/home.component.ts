@@ -17,7 +17,7 @@ import { TranslatorPipe } from "@app/shared/pipes/translate";
 import { OrderByPipe } from "@app/shared/pipes/order-by.pipe"; // Import OrderByPipe
 import {
   NgbDate,
-  NgbModal,
+  // NgbModal,
   NgbPagination,
   NgbPaginationPrevious,
   NgbPaginationNext,
@@ -28,6 +28,8 @@ import {
 import { DateRangeSelectorComponent } from "@app/shared/components/date-selector/date-selector.component"; // Import DateRangeSelectorComponent
 import { TranslateService } from "@ngx-translate/core";
 import { filter, orderBy } from "lodash-es";
+import { YearlyReportIDPipe } from "@app/shared/pipes/yearly-report-id.pipe";
+// import { YearlyReportIDPipe } from "@app/shared/pipes/yearly-report-id.pipe";
 
 @Component({
   selector: "src-recipient-home",
@@ -49,6 +51,7 @@ import { filter, orderBy } from "lodash-es";
     TranslatorPipe,
     OrderByPipe,
     DateRangeSelectorComponent,
+    YearlyReportIDPipe,
   ],
 })
 export class HomeComponent implements OnInit {

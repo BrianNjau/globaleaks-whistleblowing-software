@@ -40,8 +40,8 @@ def decrypt_tip(user_key, tip_prv_key, tip):
 
     if 'label' in tip and tip['label']:
         tip['label'] = GCE.asymmetric_decrypt(tip_key, Base64Encoder.decode(tip['label'].encode())).decode()
-    # Decrypt 'label1' to 'label6'
-    for i in range(1, 7):  # Loop through label1 to label6
+    # Decrypt 'label1' to 'label8'
+    for i in range(1, 9):  # Loop through label1 to label8
         label_key = f'label{i}'
         if label_key in tip and tip[label_key]:
             try:

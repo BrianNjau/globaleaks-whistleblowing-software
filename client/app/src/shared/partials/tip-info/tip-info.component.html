@@ -233,9 +233,9 @@
       <thead>
         <tr>
           @if (authenticationService.session?.role === 'receiver') {
-          <th class="TipInfoID">
+          <!-- <th class="TipInfoID">
             <span>{{ "Case ID" | translate }}</span>
-          </th>
+          </th> -->
           } @if (appDataService.public.contexts.length > 1) {
           <th class="TipInfoContext">
             <i class="fa-solid fa-inbox"></i>
@@ -297,9 +297,12 @@
           <td></td>
           } @if (!loading) { @if (authenticationService.session?.role ===
           'receiver') {
-          <td class="TipInfoID">
-            {{ tipService.tip.progressive }}
-          </td>
+          <!-- <td class="TipInfoID">
+            {{
+              tipService.tip.progressive
+              
+            }}
+          </td> -->
           } @if (appDataService.public.contexts.length > 1) {
           <td class="TipInfoContext">
             @if (tipService.tip.context) {

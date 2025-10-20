@@ -413,7 +413,12 @@
             ]"
             class="tip-action-open"
           >
-            <td class="TipInfoID">{{ tip.progressive }}</td>
+            <td class="TipInfoID">
+              {{
+                tip.progressive
+                  | yearlyReportID : tip.creation_date : filteredTips
+              }}
+            </td>
             @if (appDataService.public.contexts.length > 1) {
             <td class="TipInfoContext">{{ tip.context_name }}</td>
             }
