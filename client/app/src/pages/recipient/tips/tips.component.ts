@@ -390,41 +390,47 @@ export class TipsComponent implements OnInit {
       this.filteredTips = this.RTips.dataModel;
       this.processTips();
 
-      // Check if search matches the new format (e.g., "5Y2025")
+      // Check if search matches the new format (e.g., "5Y2025" or "1Y2026")
       const yearlyIdMatch = search.match(/^(\d+)Y(\d{4})$/i);
 
       if (yearlyIdMatch) {
-        // User is searching for exact formatted ID like "5Y2025"
         const [, sequence, year] = yearlyIdMatch;
         const yearNum = parseInt(year);
         const seqNum = parseInt(sequence);
+        const BASE_YEAR = 2025;
 
-        // Find tips from that year
-        const tipsInYear = this.RTips.dataModel
-          .filter(
-            (tip) => new Date(tip.creation_date).getFullYear() === yearNum
-          )
-          .sort((a, b) => a.progressive - b.progressive);
+        if (yearNum === BASE_YEAR) {
+          // For 2025, sequence IS the progressive ID
+          this.filteredTips = filter(this.filteredTips, (tip) => {
+            return (
+              tip.progressive === seqNum &&
+              new Date(tip.creation_date).getFullYear() === yearNum
+            );
+          });
+        } else if (yearNum > BASE_YEAR) {
+          // For 2026+, need to find by position
+          const tipsInYear = this.RTips.dataModel
+            .filter(
+              (tip) => new Date(tip.creation_date).getFullYear() === yearNum
+            )
+            .sort((a, b) => a.progressive - b.progressive);
 
-        // Find the tip at the specified sequence position
-        if (tipsInYear[seqNum - 1]) {
-          // Filter to show only this specific tip
-          this.filteredTips = [tipsInYear[seqNum - 1]];
+          if (tipsInYear[seqNum - 1]) {
+            this.filteredTips = [tipsInYear[seqNum - 1]];
+          } else {
+            this.filteredTips = [];
+          }
         } else {
-          // No tip found with that sequence/year combination
           this.filteredTips = [];
         }
       } else {
-        // Regular search - but also check if the formatted ID contains the search term
+        // Regular search
         this.filteredTips = orderBy(
           filter(this.filteredTips, (tip) => {
-            // First, check normal search across all fields
             if (this.utils.searchInObject(tip, search)) {
               return true;
             }
 
-            // Also check if the formatted ID contains the search term
-            // This allows partial searches like "Y2025" to find all 2025 reports
             const formattedId = this.getFormattedCaseID(
               tip.progressive,
               tip.creation_date
@@ -559,21 +565,31 @@ export class TipsComponent implements OnInit {
   }
 
   getFormattedCaseID(progressive: number, creationDate: string | Date): string {
-    const date = new Date(creationDate);
-    const year = date.getFullYear();
+    const tipDate = new Date(creationDate);
+    const tipYear = tipDate.getFullYear();
+    const BASE_YEAR = 2025;
 
-    const tipsInSameYear = this.filteredTips
-      .filter((tip) => new Date(tip.creation_date).getFullYear() === year)
-      .sort((a, b) => a.progressive - b.progressive);
+    // For 2025, use progressive ID directly
+    if (tipYear === BASE_YEAR) {
+      return `${progressive}Y${tipYear}`;
+    }
 
-    const yearSequence =
-      tipsInSameYear.findIndex((tip) => tip.progressive === progressive) + 1;
+    // For years after 2025, calculate yearly sequence
+    if (tipYear > BASE_YEAR) {
+      const tipsInSameYear = this.RTips.dataModel
+        .filter((tip) => new Date(tip.creation_date).getFullYear() === tipYear)
+        .sort((a, b) => a.progressive - b.progressive);
 
-    return yearSequence > 0
-      ? `${yearSequence}Y${year}`
-      : `${progressive}Y${year}`;
+      const yearSequence =
+        tipsInSameYear.findIndex((tip) => tip.progressive === progressive) + 1;
+
+      return yearSequence > 0
+        ? `${yearSequence}Y${tipYear}`
+        : `${progressive}Y${tipYear}`;
+    }
+
+    return `${progressive}Y${tipYear}`;
   }
-
   getDataCsv(): any[] {
     const output = [...this.filteredTips];
     return output.map((tip) => ({
