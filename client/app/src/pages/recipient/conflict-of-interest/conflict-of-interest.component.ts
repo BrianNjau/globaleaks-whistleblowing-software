@@ -38,8 +38,8 @@ import { OrderByPipe } from "@app/shared/pipes/order-by.pipe";
 import { YearlyReportIDPipe } from "@app/shared/pipes/yearly-report-id.pipe";
 
 @Component({
-  selector: "src-tips",
-  templateUrl: "./tips.component.html",
+  selector: "src-conflict-of-interest",
+  templateUrl: "./conflict-of-interest.component.html",
   standalone: true,
   imports: [
     RouterLink,
@@ -60,7 +60,7 @@ import { YearlyReportIDPipe } from "@app/shared/pipes/yearly-report-id.pipe";
     YearlyReportIDPipe,
   ],
 })
-export class TipsComponent implements OnInit {
+export class ConflictOfInterestComponent implements OnInit {
   private http = inject(HttpClient);
   protected authenticationService = inject(AuthenticationService);
   protected httpService = inject(HttpService);
@@ -73,6 +73,9 @@ export class TipsComponent implements OnInit {
   protected appDataService = inject(AppDataService);
   private translateService = inject(TranslateService);
   private tokenResourceService = inject(TokenResource);
+
+  // Add this property to store the Conflict of Interest channel ID
+  private conflictOfInterestChannelId: string | null = null;
 
   search: string | undefined;
   selectedTips: string[] = [];
@@ -90,13 +93,10 @@ export class TipsComponent implements OnInit {
     null;
   dropdownStatusModel: { id: number; label: string }[] = [];
   dropdownStatusData: { id: number; label: string }[] = [];
-  dropdownContextModel: { id: number; label: string }[] = [];
-  dropdownContextData: { id: number; label: string }[] = [];
   dropdownScoreModel: { id: number; label: string }[] = [];
   dropdownScoreData: { id: number; label: string }[] = [];
   sortKey: string = "creation_date";
   sortReverse: boolean = true;
-  channelDropdownVisible: boolean = false;
   statusDropdownVisible: boolean = false;
   scoreDropdownVisible: boolean = false;
   index: number;
@@ -118,25 +118,25 @@ export class TipsComponent implements OnInit {
     if (!this.RTips.dataModel) {
       this.router.navigate(["/recipient/home"]).then();
     } else {
-      this.filteredTips = this.RTips.dataModel;
-      console.log("RTips.dataModel:", this.RTips.dataModel);
-      this.processTips();
-      // Pre-select all channels except Conflict of Interest
+      // Find and store the Conflict of Interest channel ID
       const conflictContext = this.appDataService.public.contexts.find(
         (context) => context.name.toLowerCase().includes("conflict of interest")
       );
 
       if (conflictContext) {
-        // Set the dropdown to all channels except Conflict of Interest
-        this.dropdownContextModel = this.dropdownContextData.filter(
-          (item) => !item.label.toLowerCase().includes("conflict of interest")
+        this.conflictOfInterestChannelId = conflictContext.id;
+        // Filter for only Conflict of Interest reports
+        this.filteredTips = this.RTips.dataModel.filter(
+          (tip) => tip.context_id === this.conflictOfInterestChannelId
         );
-
-        // Apply the filter
-        if (this.dropdownContextModel.length > 0) {
-          this.applyFilter();
-        }
+      } else {
+        // If no Conflict of Interest channel found, show empty
+        console.warn("Conflict of Interest channel not found");
+        this.filteredTips = [];
       }
+
+      console.log("Conflict of Interest tips:", this.filteredTips);
+      this.processTips();
     }
   }
 
@@ -300,7 +300,8 @@ export class TipsComponent implements OnInit {
   processTips() {
     const uniqueKeys: string[] = [];
 
-    for (const tip of this.RTips.dataModel) {
+    // Process only the filtered tips
+    for (const tip of this.filteredTips) {
       tip.context = this.appDataService.contexts_by_id[tip.context_id];
       tip.context_name = tip.context.name;
       tip.submissionStatusStr = this.utils.getSubmissionStatusText(
@@ -313,13 +314,6 @@ export class TipsComponent implements OnInit {
         this.dropdownStatusData.push({
           id: this.dropdownStatusData.length + 1,
           label: tip.submissionStatusStr,
-        });
-      }
-      if (!uniqueKeys.includes(tip.context_name)) {
-        uniqueKeys.push(tip.context_name);
-        this.dropdownContextData.push({
-          id: this.dropdownContextData.length + 1,
-          label: tip.context_name,
         });
       }
 
@@ -350,19 +344,12 @@ export class TipsComponent implements OnInit {
   onChanged(model: { id: number; label: string }[], type: string) {
     this.processTips();
     if (model.length > 0 && type === "Score") {
-      this.dropdownContextModel = [];
       this.dropdownStatusModel = [];
       this.dropdownScoreModel = model;
     }
     if (model.length > 0 && type === "Status") {
-      this.dropdownContextModel = [];
       this.dropdownScoreModel = [];
       this.dropdownStatusModel = model;
-    }
-    if (model.length > 0 && type === "Context") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = model;
     }
     this.applyFilter();
   }
@@ -371,18 +358,8 @@ export class TipsComponent implements OnInit {
     return filter.length > 0;
   }
 
-  toggleChannelDropdown() {
-    this.channelDropdownVisible = !this.channelDropdownVisible;
-    this.statusDropdownVisible = false;
-    this.scoreDropdownVisible = false;
-    this.reportDatePicker = false;
-    this.lastUpdatePicker = false;
-    this.expirationDatePicker = false;
-  }
-
   toggleStatusDropdown() {
     this.statusDropdownVisible = !this.statusDropdownVisible;
-    this.channelDropdownVisible = false;
     this.scoreDropdownVisible = false;
     this.reportDatePicker = false;
     this.lastUpdatePicker = false;
@@ -391,7 +368,6 @@ export class TipsComponent implements OnInit {
 
   toggleScoreDropdown() {
     this.scoreDropdownVisible = !this.scoreDropdownVisible;
-    this.channelDropdownVisible = false;
     this.statusDropdownVisible = false;
     this.reportDatePicker = false;
     this.lastUpdatePicker = false;
@@ -403,7 +379,16 @@ export class TipsComponent implements OnInit {
 
     if (typeof search !== "undefined") {
       this.currentPage = 1;
-      this.filteredTips = this.RTips.dataModel;
+
+      // Re-apply Conflict of Interest filter first
+      if (this.conflictOfInterestChannelId) {
+        this.filteredTips = this.RTips.dataModel.filter(
+          (tip) => tip.context_id === this.conflictOfInterestChannelId
+        );
+      } else {
+        this.filteredTips = [];
+      }
+
       this.processTips();
 
       // Check if search matches the new format (e.g., "5Y2025" or "1Y2026")
@@ -425,6 +410,7 @@ export class TipsComponent implements OnInit {
           });
         } else if (yearNum > BASE_YEAR) {
           // For 2026+, need to find by position
+          // Note: We use ALL tips to maintain consistent numbering
           const tipsInYear = this.RTips.dataModel
             .filter(
               (tip) => new Date(tip.creation_date).getFullYear() === yearNum
@@ -432,7 +418,13 @@ export class TipsComponent implements OnInit {
             .sort((a, b) => a.progressive - b.progressive);
 
           if (tipsInYear[seqNum - 1]) {
-            this.filteredTips = [tipsInYear[seqNum - 1]];
+            // Check if this tip is a Conflict of Interest report
+            const foundTip = tipsInYear[seqNum - 1];
+            if (foundTip.context_id === this.conflictOfInterestChannelId) {
+              this.filteredTips = [foundTip];
+            } else {
+              this.filteredTips = [];
+            }
           } else {
             this.filteredTips = [];
           }
@@ -521,16 +513,17 @@ export class TipsComponent implements OnInit {
   }
 
   applyFilter() {
+    // Start with Conflict of Interest filtered tips
+    let baseTips = this.conflictOfInterestChannelId
+      ? this.RTips.dataModel.filter(
+          (tip) => tip.context_id === this.conflictOfInterestChannelId
+        )
+      : [];
+
     this.filteredTips = this.utils.getStaticFilter(
-      this.RTips.dataModel,
+      baseTips,
       this.dropdownStatusModel,
       "submissionStatusStr",
-      this.translateService
-    );
-    this.filteredTips = this.utils.getStaticFilter(
-      this.filteredTips,
-      this.dropdownContextModel,
-      "context_name",
       this.translateService
     );
     this.filteredTips = this.utils.getStaticFilter(
@@ -565,17 +558,13 @@ export class TipsComponent implements OnInit {
     this.lastUpdatePicker = false;
     this.expirationDatePicker = false;
     this.scoreDropdownVisible = false;
-    this.channelDropdownVisible = false;
     this.statusDropdownVisible = false;
-    this.reportDatePicker = false;
-    this.lastUpdatePicker = false;
-    this.expirationDatePicker = false;
   }
 
   exportToCsv(): void {
     this.utils.generateCSV(
       JSON.stringify(this.getDataCsv()),
-      "reports",
+      "conflict-of-interest-reports",
       this.getDataCsvHeaders()
     );
   }
@@ -590,7 +579,7 @@ export class TipsComponent implements OnInit {
       return `${progressive}Y${tipYear}`;
     }
 
-    // For years after 2025, calculate yearly sequence
+    // For years after 2025, calculate yearly sequence using ALL tips for consistency
     if (tipYear > BASE_YEAR) {
       const tipsInSameYear = this.RTips.dataModel
         .filter((tip) => new Date(tip.creation_date).getFullYear() === tipYear)
@@ -606,11 +595,11 @@ export class TipsComponent implements OnInit {
 
     return `${progressive}Y${tipYear}`;
   }
+
   getDataCsv(): any[] {
     const output = [...this.filteredTips];
     return output.map((tip) => ({
       id: tip.id,
-      // progressive: tip.progressive,
       progressive: this.getFormattedCaseID(tip.progressive, tip.creation_date),
       important: tip.important,
       reportStatus: this.utils.isDatePassed(tip.reminder_date),
