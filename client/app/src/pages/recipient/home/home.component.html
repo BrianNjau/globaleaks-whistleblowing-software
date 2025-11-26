@@ -416,7 +416,11 @@
             <td class="TipInfoID">
               {{
                 tip.progressive
-                  | yearlyReportID : tip.creation_date : filteredTips
+                  | yearlyReportID
+                    : tip.creation_date
+                    : RTips.dataModel
+                    : tip.context_id
+                    : appDataService.public.contexts
               }}
             </td>
             @if (appDataService.public.contexts.length > 1) {

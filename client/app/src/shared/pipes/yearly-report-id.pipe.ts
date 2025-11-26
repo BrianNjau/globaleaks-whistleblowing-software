@@ -9,7 +9,9 @@ export class YearlyReportIDPipe implements PipeTransform {
   transform(
     progressive: number,
     creationDate: string | Date,
-    allTips?: any[]
+    allTips?: any[],
+    contextId?: string,
+    contexts?: any[]
   ): string {
     if (!progressive || !creationDate) {
       return String(progressive || "");
@@ -17,8 +19,44 @@ export class YearlyReportIDPipe implements PipeTransform {
 
     const tipDate = new Date(creationDate);
     const tipYear = tipDate.getFullYear();
+    const yearSuffix = String(tipYear).slice(-2); // Get last 2 digits for COI format
 
-    // 2025 is the base year - reports from 2025 use their progressive ID directly
+    // Check if this is a Conflict of Interest report
+    let isConflictOfInterest = false;
+    if (contextId && contexts) {
+      const context = contexts.find((ctx) => ctx.id === contextId);
+      if (
+        context &&
+        context.name.toLowerCase().includes("conflict of interest")
+      ) {
+        isConflictOfInterest = true;
+      }
+    }
+
+    // For Conflict of Interest reports, use special COI format
+    if (isConflictOfInterest && allTips) {
+      const coiTipsInYear = allTips
+        .filter((tip) => {
+          const tipContext = contexts?.find((ctx) => ctx.id === tip.context_id);
+          return (
+            tipContext &&
+            tipContext.name.toLowerCase().includes("conflict of interest") &&
+            new Date(tip.creation_date).getFullYear() === tipYear
+          );
+        })
+        .sort((a, b) => a.progressive - b.progressive);
+
+      const coiSequence =
+        coiTipsInYear.findIndex((tip) => tip.progressive === progressive) + 1;
+
+      if (coiSequence > 0) {
+        return `${coiSequence}COI${yearSuffix}`;
+      }
+      // Fallback for COI
+      return `${progressive}COI${yearSuffix}`;
+    }
+
+    // Regular format for non-COI reports
     const BASE_YEAR = 2025;
 
     // For 2025, the progressive ID is already the correct yearly sequence

@@ -134,6 +134,23 @@ export class HomeComponent implements OnInit {
       this.filteredTips = this.RTips.dataModel;
       console.log("RTips.dataModel:", this.RTips.dataModel);
       this.processTips();
+
+      // Pre-select all channels except Conflict of Interest
+      const conflictContext = this.appDataService.public.contexts.find(
+        (context) => context.name.toLowerCase().includes("conflict of interest")
+      );
+
+      if (conflictContext) {
+        // Select all channels except Conflict of Interest
+        this.dropdownContextModel = this.dropdownContextData.filter(
+          (item) => !item.label.toLowerCase().includes("conflict of interest")
+        );
+
+        // Apply the filter if we have channels selected
+        if (this.dropdownContextModel.length > 0) {
+          this.applyFilter();
+        }
+      }
     }
     if (
       this.appDataService.public.node.user_privacy_policy_text &&
