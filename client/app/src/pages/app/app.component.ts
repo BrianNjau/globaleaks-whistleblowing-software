@@ -1,36 +1,55 @@
-import {AfterViewInit, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, Renderer2, inject} from "@angular/core";
-import {AppConfigService} from "@app/services/root/app-config.service";
-import {AppDataService} from "@app/app-data.service";
-import {UtilsService} from "@app/shared/services/utils.service";
-import {TrustedTypesService} from "@app/services/helper/trusted-types.service";
-import {LangChangeEvent, TranslateService, TranslateModule} from "@ngx-translate/core";
-import {NavigationEnd, Router, RouterOutlet} from "@angular/router";
-import {BrowserCheckService} from "@app/shared/services/browser-check.service";
-import {animate, state, style, transition, trigger} from "@angular/animations";
-import {DOCUMENT, NgClass} from "@angular/common";
-import {AuthenticationService} from "@app/services/helper/authentication.service";
-import {HeaderComponent} from "@app/shared/partials/header/header.component";
-import {NgbCollapse} from "@ng-bootstrap/ng-bootstrap";
-import {TranslatorPipe} from "@app/shared/pipes/translate";
-import {FooterComponent} from "@app/shared/partials/footer/footer.component";
-import {PrivacyBadgeComponent} from "@app/shared/partials/privacybadge/privacy-badge.component";
-import {DemoComponent} from "@app/shared/partials/demo/demo.component";
-import {MessageConsoleComponent} from "@app/shared/partials/messageconsole/message-console.component";
-import {OperationComponent} from "@app/shared/partials/operation/operation.component";
-import {AdminSidebarComponent} from "../admin/sidebar/sidebar.component";
-import {AnalystSidebarComponent} from "../analyst/sidebar/sidebar.component";
-import {CustodianSidebarComponent} from "../custodian/sidebar/sidebar.component";
-import {ReceiptSidebarComponent} from "../recipient/sidebar/sidebar.component";
-import {HttpClient} from "@angular/common/http";
-import {registerLocales} from "@app/services/helper/locale-provider";
-import {mockEngine} from "@app/services/helper/mocks";
-import {TranslateHttpLoader} from "@ngx-translate/http-loader";
-import {DEFAULT_INTERRUPTSOURCES, Idle} from "@ng-idle/core";
-import {CryptoService} from "@app/shared/services/crypto.service";
-import {HttpService} from "@app/shared/services/http.service";
-import {BodyDomObserverService} from "@app/shared/services/body-dom-observer.service";
-import {Keepalive} from "@ng-idle/keepalive";
-import DOMPurify from 'dompurify';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  inject,
+} from "@angular/core";
+import { AppConfigService } from "@app/services/root/app-config.service";
+import { AppDataService } from "@app/app-data.service";
+import { UtilsService } from "@app/shared/services/utils.service";
+import { TrustedTypesService } from "@app/services/helper/trusted-types.service";
+import {
+  LangChangeEvent,
+  TranslateService,
+  TranslateModule,
+} from "@ngx-translate/core";
+import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
+import { BrowserCheckService } from "@app/shared/services/browser-check.service";
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from "@angular/animations";
+import { DOCUMENT, NgClass } from "@angular/common";
+import { AuthenticationService } from "@app/services/helper/authentication.service";
+import { HeaderComponent } from "@app/shared/partials/header/header.component";
+import { NgbCollapse } from "@ng-bootstrap/ng-bootstrap";
+import { TranslatorPipe } from "@app/shared/pipes/translate";
+import { FooterComponent } from "@app/shared/partials/footer/footer.component";
+import { PrivacyBadgeComponent } from "@app/shared/partials/privacybadge/privacy-badge.component";
+import { DemoComponent } from "@app/shared/partials/demo/demo.component";
+import { MessageConsoleComponent } from "@app/shared/partials/messageconsole/message-console.component";
+import { OperationComponent } from "@app/shared/partials/operation/operation.component";
+import { AdminSidebarComponent } from "../admin/sidebar/sidebar.component";
+import { AnalystSidebarComponent } from "../analyst/sidebar/sidebar.component";
+import { CustodianSidebarComponent } from "../custodian/sidebar/sidebar.component";
+import { ReceiptSidebarComponent } from "../recipient/sidebar/sidebar.component";
+import { HttpClient } from "@angular/common/http";
+import { registerLocales } from "@app/services/helper/locale-provider";
+import { mockEngine } from "@app/services/helper/mocks";
+import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { DEFAULT_INTERRUPTSOURCES, Idle } from "@ng-idle/core";
+import { CryptoService } from "@app/shared/services/crypto.service";
+import { HttpService } from "@app/shared/services/http.service";
+import { BodyDomObserverService } from "@app/shared/services/body-dom-observer.service";
+import { Keepalive } from "@ng-idle/keepalive";
+import DOMPurify from "dompurify";
 
 registerLocales();
 
@@ -47,25 +66,44 @@ declare global {
   }
 }
 window.GL = {
-  language: 'en', // Assuming a default language
-  mockEngine: mockEngine
+  language: "en", // Assuming a default language
+  mockEngine: mockEngine,
 };
 
 @Component({
-    selector: "app-root",
-    templateUrl: "./app.component.html",
-    animations: [
-        trigger('fadeInOut', [
-            state('void', style({
-                opacity: 0
-            })),
-            transition(':enter, :leave', animate(150)),
-        ])
-    ],
-    standalone: true,
-    imports: [NgClass, HeaderComponent, PrivacyBadgeComponent, AdminSidebarComponent, AnalystSidebarComponent, MessageConsoleComponent, DemoComponent, OperationComponent, CustodianSidebarComponent, ReceiptSidebarComponent, FooterComponent, NgbCollapse, RouterOutlet, TranslateModule, TranslatorPipe]
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  animations: [
+    trigger("fadeInOut", [
+      state(
+        "void",
+        style({
+          opacity: 0,
+        })
+      ),
+      transition(":enter, :leave", animate(150)),
+    ]),
+  ],
+  standalone: true,
+  imports: [
+    NgClass,
+    HeaderComponent,
+    PrivacyBadgeComponent,
+    AdminSidebarComponent,
+    AnalystSidebarComponent,
+    MessageConsoleComponent,
+    DemoComponent,
+    OperationComponent,
+    CustodianSidebarComponent,
+    ReceiptSidebarComponent,
+    FooterComponent,
+    NgbCollapse,
+    RouterOutlet,
+    TranslateModule,
+    TranslatorPipe,
+  ],
 })
-export class AppComponent implements AfterViewInit, OnInit, OnDestroy{
+export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
   private document = inject<Document>(DOCUMENT);
   private renderer = inject(Renderer2);
   protected browserCheckService = inject(BrowserCheckService);
@@ -105,10 +143,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy{
     elem.type = "module";
     let scriptURL = "/s/script";
     if ((window as any).trustedTypes?.defaultPolicy) {
-        const safeURL = (window as any).trustedTypes.defaultPolicy.createScriptURL(scriptURL);
-        if (typeof safeURL === "string") {
-            scriptURL = safeURL;
-        }
+      const safeURL = (
+        window as any
+      ).trustedTypes.defaultPolicy.createScriptURL(scriptURL);
+      if (typeof safeURL === "string") {
+        scriptURL = safeURL;
+      }
     }
     elem.src = scriptURL;
     document.body.appendChild(elem);
@@ -120,15 +160,18 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy{
 
   watchLanguage() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      document.getElementsByTagName("html")[0].setAttribute("lang", this.translate.currentLang);
+      document
+        .getElementsByTagName("html")[0]
+        .setAttribute("lang", this.translate.currentLang);
     });
   }
 
   checkToShowSidebar() {
-    this.router.events.subscribe((event:any) => {
+    this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         const excludedUrls = [
-          "/recipient/reports"
+          "/recipient/reports",
+          "/recipient/conflict-of-interest",
         ];
         const currentUrl = event.url;
         this.showSidebar = !excludedUrls.includes(currentUrl);
@@ -137,13 +180,13 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy{
   }
 
   ngOnInit() {
-    DOMPurify.addHook('afterSanitizeAttributes', function (node) {
-      const href = node.getAttribute('href') || '';
+    DOMPurify.addHook("afterSanitizeAttributes", function (node) {
+      const href = node.getAttribute("href") || "";
       const url = new URL(href, window.location.origin);
 
       // Ensure only external links are modified
       if (url.origin !== window.location.origin) {
-        node.setAttribute('target', '_blank');
+        node.setAttribute("target", "_blank");
       }
     });
 
@@ -152,16 +195,16 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy{
   }
 
   public ngAfterViewInit(): void {
-    this.appDataService.showLoadingPanel$.subscribe((value:any) => {
+    this.appDataService.showLoadingPanel$.subscribe((value: any) => {
       this.showLoadingPanel = value;
       this.supportedBrowser = this.browserCheckService.checkBrowserSupport();
       this.changeDetectorRef.detectChanges();
     });
   }
 
-  @HostListener('document:keydown', ['$event'])
+  @HostListener("document:keydown", ["$event"])
   handleKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'F5') {
+    if (event.key === "F5") {
       event.preventDefault();
       this.utilsService.reloadCurrentRoute();
     }
@@ -181,12 +224,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy{
     this.keepalive.onPing.subscribe(() => {
       if (this.authenticationService.session) {
         const token = this.authenticationService.session.token;
-        this.cryptoService.proofOfWork(token).subscribe((result:any) => {
-	  const param = {'token': token.id + ":" + result};
-          this.httpService.requestRefreshUserSession(param).subscribe(((result:any) => {
-            this.authenticationService.session.token = result.token;
-	  }));
-	});
+        this.cryptoService.proofOfWork(token).subscribe((result: any) => {
+          const param = { token: token.id + ":" + result };
+          this.httpService
+            .requestRefreshUserSession(param)
+            .subscribe((result: any) => {
+              this.authenticationService.session.token = result.token;
+            });
+        });
       }
     });
 
