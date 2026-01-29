@@ -124,10 +124,10 @@
           </th>
           <th
             class="TipInfoID"
-            (click)="sortKey = 'progressive'; sortReverse = !sortReverse"
+            (click)="sortKey = 'yearly_sequence'; sortReverse = !sortReverse"
           >
             <span>{{ "Case ID" | translate }}</span>
-            @if (sortKey === 'progressive') {
+            @if (sortKey === 'yearly_sequence') {
             <span>
               @if (!sortReverse) {
               <span class="fa-solid fa-caret-down"></span>
@@ -562,8 +562,11 @@
           </td>
           <td class="TipInfoID">
             {{
-              tip.progressive
-                | yearlyReportID : tip.creation_date : RTips.dataModel
+              tip.yearly_sequence
+                | yearlyReportID
+                  : tip.creation_date
+                  : tip.context_id
+                  : appDataService.public.contexts
             }}
           </td>
           @if (appDataService.public.contexts.length > 1) {

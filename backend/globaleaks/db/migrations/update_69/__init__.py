@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from collections import defaultdict
 
 from globaleaks.db.migrations.update import MigrationBase
 from globaleaks.models import Model
@@ -49,21 +50,37 @@ class InternalTip_v_68(Model):
 class MigrationScript(MigrationBase):
     def migrate_InternalTip(self):
         """
-        Add new label columns to the internaltip table and migrate data.
+        Add new label columns and yearly_sequence to the internaltip table and migrate data.
         """
-        for old_obj in self.session_old.query(self.model_from['InternalTip']):
+        # First pass: collect all tips grouped by (tid, context_id, year) and sort by progressive
+        tips_by_group = defaultdict(list)
+        old_tips = list(self.session_old.query(self.model_from['InternalTip']))
+
+        for old_obj in old_tips:
+            year = old_obj.creation_date.year
+            group_key = (old_obj.tid, old_obj.context_id, year)
+            tips_by_group[group_key].append(old_obj)
+
+        # Sort each group by progressive to assign correct yearly_sequence
+        for group_key in tips_by_group:
+            tips_by_group[group_key].sort(key=lambda t: t.progressive)
+
+        # Compute yearly_sequence for each tip
+        yearly_seq_map = {}
+        for group_key, tips in tips_by_group.items():
+            for seq, tip in enumerate(tips, start=1):
+                yearly_seq_map[tip.id] = seq
+
+        # Second pass: create new objects with all fields populated
+        for old_obj in old_tips:
             new_obj = self.model_to['InternalTip']()
             for key in new_obj.__mapper__.column_attrs.keys():
-                setattr(new_obj, key, getattr(old_obj, key))
-
-            # Initialize new label columns with default values
-            new_obj.label1 = ''
-            new_obj.label2 = ''
-            new_obj.label3 = ''
-            new_obj.label4 = ''
-            new_obj.label5 = ''
-            new_obj.label6 = ''
-            new_obj.label7 = ''
-            new_obj.label8 = ''
+                if key in ('label1', 'label2', 'label3', 'label4',
+                           'label5', 'label6', 'label7', 'label8'):
+                    setattr(new_obj, key, '')
+                elif key == 'yearly_sequence':
+                    setattr(new_obj, key, yearly_seq_map.get(old_obj.id, 0))
+                else:
+                    setattr(new_obj, key, getattr(old_obj, key))
 
             self.session_new.add(new_obj)

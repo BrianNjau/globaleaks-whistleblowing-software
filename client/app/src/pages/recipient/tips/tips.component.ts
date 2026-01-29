@@ -406,39 +406,26 @@ export class TipsComponent implements OnInit {
       this.filteredTips = this.RTips.dataModel;
       this.processTips();
 
-      // Check if search matches the new format (e.g., "5Y2025" or "1Y2026")
+      // Check if search matches COI format (e.g., "3COI25") or regular format (e.g., "5Y2025")
+      const coiIdMatch = search.match(/^(\d+)COI(\d{2})$/i);
       const yearlyIdMatch = search.match(/^(\d+)Y(\d{4})$/i);
 
-      if (yearlyIdMatch) {
-        const [, sequence, year] = yearlyIdMatch;
-        const yearNum = parseInt(year);
-        const seqNum = parseInt(sequence);
-        const BASE_YEAR = 2025;
-
-        if (yearNum === BASE_YEAR) {
-          // For 2025, sequence IS the progressive ID
-          this.filteredTips = filter(this.filteredTips, (tip) => {
-            return (
-              tip.progressive === seqNum &&
-              new Date(tip.creation_date).getFullYear() === yearNum
-            );
-          });
-        } else if (yearNum > BASE_YEAR) {
-          // For 2026+, need to find by position
-          const tipsInYear = this.RTips.dataModel
-            .filter(
-              (tip) => new Date(tip.creation_date).getFullYear() === yearNum
-            )
-            .sort((a, b) => a.progressive - b.progressive);
-
-          if (tipsInYear[seqNum - 1]) {
-            this.filteredTips = [tipsInYear[seqNum - 1]];
-          } else {
-            this.filteredTips = [];
-          }
-        } else {
-          this.filteredTips = [];
-        }
+      if (coiIdMatch) {
+        const seqNum = parseInt(coiIdMatch[1]);
+        const yearSuffix = coiIdMatch[2];
+        this.filteredTips = filter(this.filteredTips, (tip) => {
+          const tipYearSuffix = String(new Date(tip.creation_date).getFullYear()).slice(-2);
+          return tip.yearly_sequence === seqNum && tipYearSuffix === yearSuffix;
+        });
+      } else if (yearlyIdMatch) {
+        const seqNum = parseInt(yearlyIdMatch[1]);
+        const yearNum = parseInt(yearlyIdMatch[2]);
+        this.filteredTips = filter(this.filteredTips, (tip) => {
+          return (
+            tip.yearly_sequence === seqNum &&
+            new Date(tip.creation_date).getFullYear() === yearNum
+          );
+        });
       } else {
         // Regular search
         this.filteredTips = orderBy(
@@ -447,10 +434,7 @@ export class TipsComponent implements OnInit {
               return true;
             }
 
-            const formattedId = this.getFormattedCaseID(
-              tip.progressive,
-              tip.creation_date
-            );
+            const formattedId = this.getFormattedCaseID(tip);
             return formattedId.toLowerCase().includes(search.toLowerCase());
           }),
           "update_date"
@@ -580,38 +564,27 @@ export class TipsComponent implements OnInit {
     );
   }
 
-  getFormattedCaseID(progressive: number, creationDate: string | Date): string {
-    const tipDate = new Date(creationDate);
+  getFormattedCaseID(tip: rtipResolverModel): string {
+    const tipDate = new Date(tip.creation_date);
     const tipYear = tipDate.getFullYear();
-    const BASE_YEAR = 2025;
+    const yearSuffix = String(tipYear).slice(-2);
 
-    // For 2025, use progressive ID directly
-    if (tipYear === BASE_YEAR) {
-      return `${progressive}Y${tipYear}`;
+    // Check if this is a COI report
+    const context = this.appDataService.public.contexts.find(
+      (ctx) => ctx.id === tip.context_id
+    );
+    if (context && context.name.toLowerCase().includes("conflict of interest")) {
+      return `${tip.yearly_sequence}COI${yearSuffix}`;
     }
 
-    // For years after 2025, calculate yearly sequence
-    if (tipYear > BASE_YEAR) {
-      const tipsInSameYear = this.RTips.dataModel
-        .filter((tip) => new Date(tip.creation_date).getFullYear() === tipYear)
-        .sort((a, b) => a.progressive - b.progressive);
-
-      const yearSequence =
-        tipsInSameYear.findIndex((tip) => tip.progressive === progressive) + 1;
-
-      return yearSequence > 0
-        ? `${yearSequence}Y${tipYear}`
-        : `${progressive}Y${tipYear}`;
-    }
-
-    return `${progressive}Y${tipYear}`;
+    return `${tip.yearly_sequence}Y${tipYear}`;
   }
   getDataCsv(): any[] {
     const output = [...this.filteredTips];
     return output.map((tip) => ({
       id: tip.id,
       // progressive: tip.progressive,
-      progressive: this.getFormattedCaseID(tip.progressive, tip.creation_date),
+      progressive: this.getFormattedCaseID(tip),
       important: tip.important,
       reportStatus: this.utils.isDatePassed(tip.reminder_date),
       context_name: tip.context_name,

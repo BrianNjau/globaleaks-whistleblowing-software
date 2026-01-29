@@ -21,6 +21,7 @@ export class RecieverTipData {
   update_date: string;
   expiration_date: string;
   progressive: number;
+  yearly_sequence: number;
   context_id: string;
   questionnaires: Questionnaire[];
   tor: boolean;

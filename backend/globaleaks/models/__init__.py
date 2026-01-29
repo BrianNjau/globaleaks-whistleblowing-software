@@ -650,7 +650,7 @@ class _InternalTip(Model):
     label6 = Column(UnicodeText, default='', nullable=False)
     label7 = Column(UnicodeText, default='', nullable=False)
     label8 = Column(UnicodeText, default='', nullable=False)
-    
+    yearly_sequence = Column(Integer, default=0, nullable=False)
 
     @declared_attr
     def __table_args__(self):

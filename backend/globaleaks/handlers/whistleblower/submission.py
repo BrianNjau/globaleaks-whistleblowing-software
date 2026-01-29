@@ -5,7 +5,7 @@ import re
 from nacl.encoding import Base64Encoder
 from nacl.public import PrivateKey
 
-from sqlalchemy import exists, func, and_
+from sqlalchemy import exists, extract, func, and_
 
 from globaleaks import models
 from globaleaks.handlers.admin.questionnaire import db_get_questionnaire
@@ -141,6 +141,16 @@ def db_assign_submission_progressive(session, tid):
     return counter.value
 
 
+def db_assign_yearly_sequence(session, tid, context_id, creation_date):
+    year = creation_date.year
+    max_seq = session.query(func.coalesce(func.max(models.InternalTip.yearly_sequence), 0)).filter(
+        models.InternalTip.tid == tid,
+        models.InternalTip.context_id == context_id,
+        extract('year', models.InternalTip.creation_date) == year
+    ).scalar()
+    return max_seq + 1
+
+
 def db_archive_questionnaire_schema(session, questionnaire):
     hash = sha256(json.dumps(questionnaire, sort_keys=True)).decode("utf-8")
     if session.query(models.ArchivedSchema).filter(models.ArchivedSchema.hash == hash).count():
@@ -227,6 +237,7 @@ def db_create_submission(session, tid, request, user_session, client_using_tor, 
     itip.mobile = client_using_mobile
 
     itip.context_id = context.id
+    itip.yearly_sequence = db_assign_yearly_sequence(session, tid, context.id, itip.creation_date)
 
     whistleblower_identity = session.query(models.Field) \
                                     .filter(models.Field.template_id == 'whistleblower_identity',
