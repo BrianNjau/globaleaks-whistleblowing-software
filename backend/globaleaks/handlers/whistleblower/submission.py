@@ -5,7 +5,7 @@ import re
 from nacl.encoding import Base64Encoder
 from nacl.public import PrivateKey
 
-from sqlalchemy import exists, extract, func, and_
+from sqlalchemy import exists, func, and_
 
 from globaleaks import models
 from globaleaks.handlers.admin.questionnaire import db_get_questionnaire
@@ -15,7 +15,7 @@ from globaleaks.rest import errors, requests
 from globaleaks.state import State
 from globaleaks.utils.crypto import sha256, GCE
 from globaleaks.utils.json import JSONEncoder
-from globaleaks.utils.utility import get_expiration, datetime_null
+from globaleaks.utils.utility import get_expiration, datetime_null, datetime_now
 
 
 def index_answers(answers, parent_index=''):
@@ -143,12 +143,12 @@ def db_assign_submission_progressive(session, tid):
 
 def db_assign_yearly_sequence(session, tid, context_id, creation_date):
     year = creation_date.year
-    max_seq = session.query(func.coalesce(func.max(models.InternalTip.yearly_sequence), 0)).filter(
+    tips = session.query(models.InternalTip.creation_date).filter(
         models.InternalTip.tid == tid,
-        models.InternalTip.context_id == context_id,
-        extract('year', models.InternalTip.creation_date) == year
-    ).scalar()
-    return max_seq + 1
+        models.InternalTip.context_id == context_id
+    ).all()
+    count = sum(1 for t in tips if t.creation_date and t.creation_date.year == year)
+    return count + 1
 
 
 def db_archive_questionnaire_schema(session, questionnaire):
@@ -218,6 +218,7 @@ def db_create_submission(session, tid, request, user_session, client_using_tor, 
     itip = models.InternalTip()
     itip.tid = tid
     itip.status = 'new'
+    itip.creation_date = datetime_now()
 
     # Ensure that update_date and creation_date have the same value at creation time.
     itip.update_date = itip.creation_date
