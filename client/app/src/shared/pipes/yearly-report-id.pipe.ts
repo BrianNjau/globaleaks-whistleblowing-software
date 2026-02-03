@@ -12,7 +12,7 @@ export class YearlyReportIDPipe implements PipeTransform {
     contextId?: string,
     contexts?: any[]
   ): string {
-    if (!yearlySequence || !creationDate) {
+    if (!creationDate) {
       return String(yearlySequence || "");
     }
 
@@ -20,20 +20,15 @@ export class YearlyReportIDPipe implements PipeTransform {
     const tipYear = tipDate.getFullYear();
 
     // Check if this is a Conflict of Interest report
-    let isConflictOfInterest = false;
     if (contextId && contexts) {
       const context = contexts.find((ctx) => ctx.id === contextId);
       if (
         context &&
         context.name.toLowerCase().includes("conflict of interest")
       ) {
-        isConflictOfInterest = true;
+        const yearSuffix = String(tipYear).slice(-2);
+        return `${yearlySequence}COI${yearSuffix}`;
       }
-    }
-
-    if (isConflictOfInterest) {
-      const yearSuffix = String(tipYear).slice(-2);
-      return `${yearlySequence}COI${yearSuffix}`;
     }
 
     return `${yearlySequence}Y${tipYear}`;

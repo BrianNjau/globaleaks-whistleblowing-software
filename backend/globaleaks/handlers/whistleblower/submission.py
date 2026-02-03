@@ -141,12 +141,22 @@ def db_assign_submission_progressive(session, tid):
     return counter.value
 
 
-def db_assign_yearly_sequence(session, tid, context_id, creation_date):
+def db_assign_yearly_sequence(session, tid, context_id, creation_date, is_coi):
     year = creation_date.year
-    tips = session.query(models.InternalTip.creation_date).filter(
-        models.InternalTip.tid == tid,
-        models.InternalTip.context_id == context_id
-    ).all()
+    if is_coi:
+        tips = session.query(models.InternalTip.creation_date).filter(
+            models.InternalTip.tid == tid,
+            models.InternalTip.context_id == context_id
+        ).all()
+    else:
+        coi_context_ids = [
+            c.id for c in session.query(models.Context).filter(models.Context.tid == tid).all()
+            if any('conflict of interest' in v.lower() for v in c.name.values() if isinstance(v, str))
+        ]
+        tips = session.query(models.InternalTip.creation_date).filter(
+            models.InternalTip.tid == tid,
+            ~models.InternalTip.context_id.in_(coi_context_ids)
+        ).all()
     count = sum(1 for t in tips if t.creation_date and t.creation_date.year == year)
     return count + 1
 
@@ -238,7 +248,8 @@ def db_create_submission(session, tid, request, user_session, client_using_tor, 
     itip.mobile = client_using_mobile
 
     itip.context_id = context.id
-    itip.yearly_sequence = db_assign_yearly_sequence(session, tid, context.id, itip.creation_date)
+    is_coi = any('conflict of interest' in v.lower() for v in context.name.values() if isinstance(v, str))
+    itip.yearly_sequence = db_assign_yearly_sequence(session, tid, context.id, itip.creation_date, is_coi)
 
     whistleblower_identity = session.query(models.Field) \
                                     .filter(models.Field.template_id == 'whistleblower_identity',
