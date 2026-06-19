@@ -289,142 +289,48 @@ export class HomeComponent implements OnInit {
       return this.translateService.instant("None");
     }
   }
-  //review this
   onChanged(model: { id: number; label: string }[], type: string) {
     this.processTips();
-    if (model.length > 0 && type === "Score") {
-      this.dropdownLabel1Model = [];
-      this.dropdownContextModel = [];
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = model;
-    }
-    if (model.length > 0 && type === "Status") {
-      this.dropdownLabel1Model = [];
-      this.dropdownContextModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownStatusModel = model;
-    }
-    if (model.length > 0 && type === "Context") {
-      this.dropdownLabel1Model = [];
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = model;
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-      this.dropdownLabel7Model = [];
-      this.dropdownLabel8Model = [];
-    }
-    if (model.length > 0 && type === "Label1") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = model;
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-      this.dropdownLabel7Model = [];
-      this.dropdownLabel8Model = [];
-    }
-    if (model.length > 0 && type === "Label2") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = model;
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-      this.dropdownLabel7Model = [];
-      this.dropdownLabel8Model = [];
-    }
-    if (model.length > 0 && type === "Label3") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = model;
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-      this.dropdownLabel7Model = [];
-      this.dropdownLabel8Model = [];
-    }
-    if (model.length > 0 && type === "Label4") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = model;
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-      this.dropdownLabel7Model = [];
-      this.dropdownLabel8Model = [];
-    }
-    if (model.length > 0 && type === "Label5") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = model;
-      this.dropdownLabel6Model = [];
-      this.dropdownLabel7Model = [];
-      this.dropdownLabel8Model = [];
-    }
-    if (model.length > 0 && type === "Label6") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = model;
-      this.dropdownLabel7Model = [];
-      this.dropdownLabel8Model = [];
-    }
-    if (model.length > 0 && type === "Label7") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-      this.dropdownLabel7Model = model;
-      this.dropdownLabel8Model = [];
-    }
-    if (model.length > 0 && type === "Label8") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-      this.dropdownLabel7Model = [];
-      this.dropdownLabel8Model = model;
+    switch (type) {
+      case "Score":
+        this.dropdownScoreModel = model;
+        break;
+      case "Status":
+        this.dropdownStatusModel = model;
+        break;
+      case "Context":
+      case "Channel":
+        this.dropdownContextModel = model;
+        break;
+      case "Label1":
+        this.dropdownLabel1Model = model;
+        break;
+      case "Label2":
+        this.dropdownLabel2Model = model;
+        break;
+      case "Label3":
+        this.dropdownLabel3Model = model;
+        break;
+      case "Label4":
+        this.dropdownLabel4Model = model;
+        break;
+      case "Label5":
+        this.dropdownLabel5Model = model;
+        break;
+      case "Label6":
+        this.dropdownLabel6Model = model;
+        break;
+      case "Label7":
+      case "label7":
+        this.dropdownLabel7Model = model;
+        break;
+      case "Label8":
+      case "label8":
+        this.dropdownLabel8Model = model;
+        break;
     }
     this.applyFilter();
   }
-  //
 
   checkFilter(filter: { id: number; label: string }[]) {
     return filter.length > 0;

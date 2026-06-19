@@ -349,20 +349,16 @@ export class TipsComponent implements OnInit {
 
   onChanged(model: { id: number; label: string }[], type: string) {
     this.processTips();
-    if (model.length > 0 && type === "Score") {
-      this.dropdownContextModel = [];
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = model;
-    }
-    if (model.length > 0 && type === "Status") {
-      this.dropdownContextModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownStatusModel = model;
-    }
-    if (model.length > 0 && type === "Context") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = model;
+    switch (type) {
+      case "Score":
+        this.dropdownScoreModel = model;
+        break;
+      case "Status":
+        this.dropdownStatusModel = model;
+        break;
+      case "Context":
+        this.dropdownContextModel = model;
+        break;
     }
     this.applyFilter();
   }

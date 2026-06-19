@@ -35,5 +35,19 @@ $danger:     $red;
 $light:      $gray-100;
 $dark:       $gray-900;
 
+// Modernized shape & elevation tokens. Bootstrap derives most component
+// radii/shadows (buttons, inputs, dropdowns, modals, cards, badges,
+// pagination, nav-tabs) from these, so the look stays consistent platform-wide.
+$border-radius:       0.5rem;
+$border-radius-sm:    0.375rem;
+$border-radius-lg:    0.75rem;
+
+$box-shadow-sm:       0 1px 2px rgba($black, 0.06);
+$box-shadow:          0 1px 2px rgba($black, 0.04), 0 4px 12px rgba($black, 0.06);
+$box-shadow-lg:       0 8px 24px rgba($black, 0.12);
+
+$input-focus-border-color: $blue;
+$input-focus-box-shadow:   0 0 0 0.2rem rgba($blue, 0.25);
+
 // Import Bootstrap
 @import "bootstrap/scss/bootstrap";

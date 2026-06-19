@@ -1174,3 +1174,127 @@ body .dropdown-visible > div.multiselect-dropdown > div > span.dropdown-btn {
   flex: 1; /* Ensures inputs take equal space */
   min-width: 200px; /* Prevents inputs from shrinking too much */
 }
+
+/* ---------------------------------------------------------------------
+   Modern UI pass: table/dropdown/pagination chrome, applied platform-wide.
+   --------------------------------------------------------------------- */
+
+.report-count-badge {
+  display: inline-block;
+  margin: 0;
+  padding: 0.35em 0.9em;
+  background-color: #EBEFF5;
+  color: #103253;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 999px;
+}
+
+#TipList .table-responsive {
+  background-color: #fff;
+  border: 1px solid #EBEFF5;
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem 0.75rem;
+  box-shadow: 0 1px 2px rgba(29, 31, 36, 0.04), 0 4px 12px rgba(29, 31, 36, 0.04);
+}
+
+#tipList thead th {
+  background-color: #F5F7FA;
+  color: #434A54;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 2px solid #DDE3ED;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  vertical-align: middle;
+  transition: background-color 0.15s ease;
+}
+
+#tipList thead th:hover {
+  background-color: #EBEFF5;
+}
+
+#tipList thead .fa-caret-up,
+#tipList thead .fa-caret-down {
+  margin-left: 0.3em;
+  color: #3679BB;
+}
+
+#tipList tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+#tipList tbody tr:hover > * {
+  background-color: #EBEFF5 !important;
+}
+
+#tipList td {
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #EBEFF5;
+}
+
+.dropdown-multi-select-container .fa-filter,
+.ngb-datepicker-container .fa-calendar {
+  cursor: pointer;
+  padding: 0.3em;
+  border-radius: 6px;
+  color: #8E99AB;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-multi-select-container .fa-filter:hover,
+.ngb-datepicker-container .fa-calendar:hover {
+  background-color: #EBEFF5;
+  color: #3679BB;
+}
+
+.dropdown-multi-select-container .fa-filter.filterSelected,
+.ngb-datepicker-container .fa-calendar.calendar-active {
+  color: #3679BB;
+  background-color: #E3EEFB;
+}
+
+.dropdown-multi-select-container .multiselect-dropdown > .dropdown-list {
+  border-radius: 10px !important;
+  border: 1px solid #DDE3ED;
+  box-shadow: 0 8px 24px rgba(29, 31, 36, 0.12);
+}
+
+.ngb-datepicker-container-inner {
+  box-shadow: 0 8px 24px rgba(29, 31, 36, 0.12);
+  border-radius: 10px !important;
+  border: 1px solid #DDE3ED;
+}
+
+.pagination .page-link {
+  border-radius: 8px;
+  margin: 0 2px;
+  border-color: #DDE3ED;
+  color: #434A54;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #3679BB;
+  border-color: #3679BB;
+}
+
+.btn-primary,
+.btn-danger {
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-primary:hover,
+.btn-danger:hover {
+  filter: brightness(0.94);
+}
+
+.card {
+  box-shadow: 0 1px 2px rgba(29, 31, 36, 0.04), 0 4px 12px rgba(29, 31, 36, 0.04);
+}
+
+.modal-content {
+  box-shadow: 0 8px 24px rgba(29, 31, 36, 0.16);
+}

@@ -343,13 +343,13 @@ export class ConflictOfInterestComponent implements OnInit {
 
   onChanged(model: { id: number; label: string }[], type: string) {
     this.processTips();
-    if (model.length > 0 && type === "Score") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = model;
-    }
-    if (model.length > 0 && type === "Status") {
-      this.dropdownScoreModel = [];
-      this.dropdownStatusModel = model;
+    switch (type) {
+      case "Score":
+        this.dropdownScoreModel = model;
+        break;
+      case "Status":
+        this.dropdownStatusModel = model;
+        break;
     }
     this.applyFilter();
   }
