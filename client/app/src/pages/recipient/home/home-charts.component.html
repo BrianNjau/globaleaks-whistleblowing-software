@@ -1,0 +1,231 @@
+<div class="charts-section mb-3">
+
+  <!-- Toggle -->
+  <button type="button" class="charts-toggle btn btn-sm btn-outline-secondary mb-2" (click)="toggleCharts()">
+    <i class="fa-solid" [ngClass]="chartsVisible ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+    {{ chartsVisible ? 'Hide Charts' : 'Show Charts' }}
+  </button>
+
+  @if (chartsVisible) {
+    @if (!hasData) {
+      <div class="charts-empty text-muted small py-3">No reports match the current filters.</div>
+    } @else {
+
+      <!-- Stat tiles -->
+      <div class="row g-2 mb-2">
+        <div class="col-4">
+          <div class="stat-tile">
+            <div class="stat-eyebrow">Total Reports</div>
+            <div class="stat-value">{{ statTotal }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-tile">
+            <div class="stat-eyebrow">Open Cases</div>
+            <div class="stat-value stat-value--open">{{ statOpen }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-tile">
+            <div class="stat-eyebrow">High Priority</div>
+            <div class="stat-value stat-value--high">{{ statHighPriority }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 1: Issue Type bar | Case Status donut -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Issue Type</div>
+            <div class="chart-title">Reports by Issue Type</div>
+            @if (issueTypeBars.length === 0) {
+              <div class="chart-nodata">No data</div>
+            } @else {
+              <div class="bar-list">
+                @for (bar of issueTypeBars; track bar.label) {
+                  <div class="bar-row" [title]="bar.label + ': ' + bar.count">
+                    <span class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</span>
+                    <div class="bar-track">
+                      <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor, 'opacity': bar.muted ? '0.4' : '1'}"></div>
+                    </div>
+                    <span class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Status</div>
+            <div class="chart-title">Case Status</div>
+            @if (statusSlices.length === 0) {
+              <div class="chart-nodata">No data</div>
+            } @else {
+              <div class="donut-wrap">
+                <svg class="donut-svg" viewBox="0 0 90 90" aria-hidden="true">
+                  <circle r="32" cx="45" cy="45" fill="none" stroke="#e5e7eb" stroke-width="14"/>
+                  @for (slice of statusSlices; track slice.label) {
+                    <circle r="32" cx="45" cy="45" fill="none"
+                      [attr.stroke]="slice.color"
+                      stroke-width="14"
+                      [attr.stroke-dasharray]="slice.dashArray"
+                      [attr.stroke-dashoffset]="slice.dashOffset"
+                      transform="rotate(-90 45 45)">
+                      <title>{{ slice.label }}: {{ slice.count }}</title>
+                    </circle>
+                  }
+                  <text x="45" y="43" text-anchor="middle" class="donut-center-value">{{ statTotal }}</text>
+                  <text x="45" y="55" text-anchor="middle" class="donut-center-label">total</text>
+                </svg>
+                <div class="donut-legend">
+                  @for (slice of statusSlices; track slice.label) {
+                    <div class="legend-item">
+                      <span class="legend-dot" [ngStyle]="{'background': slice.color}"></span>
+                      <span class="legend-text">{{ slice.label }}</span>
+                      <span class="legend-val">{{ slice.count }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Site bar | Priority donut -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Site</div>
+            <div class="chart-title">Reports by Site</div>
+            @if (siteBars.length === 0) {
+              <div class="chart-nodata">No data</div>
+            } @else {
+              <div class="bar-list">
+                @for (bar of siteBars; track bar.label) {
+                  <div class="bar-row" [title]="bar.label + ': ' + bar.count">
+                    <span class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</span>
+                    <div class="bar-track">
+                      <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor, 'opacity': bar.muted ? '0.4' : '1'}"></div>
+                    </div>
+                    <span class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Priority</div>
+            <div class="chart-title">Priority Breakdown</div>
+            @if (prioritySlices.length === 0) {
+              <div class="chart-nodata">No data</div>
+            } @else {
+              <div class="donut-wrap">
+                <svg class="donut-svg" viewBox="0 0 90 90" aria-hidden="true">
+                  <circle r="32" cx="45" cy="45" fill="none" stroke="#e5e7eb" stroke-width="14"/>
+                  @for (slice of prioritySlices; track slice.label) {
+                    <circle r="32" cx="45" cy="45" fill="none"
+                      [attr.stroke]="slice.color"
+                      stroke-width="14"
+                      [attr.stroke-dasharray]="slice.dashArray"
+                      [attr.stroke-dashoffset]="slice.dashOffset"
+                      transform="rotate(-90 45 45)">
+                      <title>{{ slice.label }}: {{ slice.count }}</title>
+                    </circle>
+                  }
+                  <text x="45" y="43" text-anchor="middle" class="donut-center-value">{{ statTotal }}</text>
+                  <text x="45" y="55" text-anchor="middle" class="donut-center-label">total</text>
+                </svg>
+                <div class="donut-legend">
+                  @for (slice of prioritySlices; track slice.label) {
+                    <div class="legend-item">
+                      <span class="legend-dot" [ngStyle]="{'background': slice.color}"></span>
+                      <span class="legend-text">{{ slice.label }}</span>
+                      <span class="legend-val">{{ slice.count }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Outcome bar | Investigator bar -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Outcome</div>
+            <div class="chart-title">Reports by Outcome</div>
+            @if (outcomeBars.length === 0) {
+              <div class="chart-nodata">No data</div>
+            } @else {
+              <div class="bar-list">
+                @for (bar of outcomeBars; track bar.label) {
+                  <div class="bar-row" [title]="bar.label + ': ' + bar.count">
+                    <span class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</span>
+                    <div class="bar-track">
+                      <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor, 'opacity': bar.muted ? '0.4' : '1'}"></div>
+                    </div>
+                    <span class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Investigator</div>
+            <div class="chart-title">Reports by Investigator</div>
+            @if (investigatorBars.length === 0) {
+              <div class="chart-nodata">No data</div>
+            } @else {
+              <div class="bar-list">
+                @for (bar of investigatorBars; track bar.label) {
+                  <div class="bar-row" [title]="bar.label + ': ' + bar.count">
+                    <span class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</span>
+                    <div class="bar-track">
+                      <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor, 'opacity': bar.muted ? '0.4' : '1'}"></div>
+                    </div>
+                    <span class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Substantiated bar -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Substantiated</div>
+            <div class="chart-title">Substantiated Breakdown</div>
+            @if (substantiatedBars.length === 0) {
+              <div class="chart-nodata">No data</div>
+            } @else {
+              <div class="bar-list">
+                @for (bar of substantiatedBars; track bar.label) {
+                  <div class="bar-row" [title]="bar.label + ': ' + bar.count">
+                    <span class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</span>
+                    <div class="bar-track">
+                      <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor, 'opacity': bar.muted ? '0.4' : '1'}"></div>
+                    </div>
+                    <span class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    }
+  }
+</div>

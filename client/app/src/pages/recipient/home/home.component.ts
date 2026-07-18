@@ -4,6 +4,7 @@ import {preferenceResolverModel} from "@app/models/resolvers/preference-resolver
 import {PreferenceResolver} from "@app/shared/resolvers/preference.resolver";
 import {UtilsService} from "@app/shared/services/utils.service";
 import {UserHomeComponent} from "@app/shared/partials/user-home/user-home.component";
+import {HomeChartsComponent} from "./home-charts.component";
 import { RTipsResolver } from "@app/shared/resolvers/r-tips-resolver.service";
 import { rtipResolverModel } from "@app/models/resolvers/rtips-resolver-model";
 import { FormsModule } from "@angular/forms"; // Import FormsModule
@@ -22,6 +23,7 @@ import {filter, orderBy} from "lodash-es";
     templateUrl: "./home.component.html",
     standalone: true,
     imports: [UserHomeComponent,
+    HomeChartsComponent,
       FormsModule,
     NgClass,
     NgMultiSelectDropDownModule,
@@ -300,6 +302,21 @@ export class HomeComponent implements OnInit {
   checkFilter(filter: { id: number; label: string; }[]) {
     return filter.length > 0;
   };
+
+  toggleStatusDropdown() {
+    this.statusDropdownVisible = !this.statusDropdownVisible;
+    this.channelDropdownVisible = false;
+    this.label1DropdownVisible = false;
+    this.label2DropdownVisible = false;
+    this.label3DropdownVisible = false;
+    this.label4DropdownVisible = false;
+    this.label5DropdownVisible = false;
+    this.label6DropdownVisible = false;
+    this.scoreDropdownVisible = false;
+    this.reportDatePicker = false;
+    this.lastUpdatePicker = false;
+    this.expirationDatePicker = false;
+  }
 
   toggleChannelDropdown() {
     this.channelDropdownVisible = !this.channelDropdownVisible;

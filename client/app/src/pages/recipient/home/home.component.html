@@ -9,6 +9,8 @@
     </div>
 
      
+    <src-recipient-home-charts [tips]="filteredTips"></src-recipient-home-charts>
+
     <div id="TipList" class="row mt-2">
       <div class="col-md-12 table-responsive">
         <table class="table table-striped" id="tipList">
@@ -217,6 +219,30 @@
                 </span>
                 }
               </th>
+              <th class="TipInfoLabel">
+                <span (click)="sortKey = 'status'; sortReverse = !sortReverse">
+                  <i class="fa-solid fa-circle-dot"></i>
+                  <span>{{'Status' | translate}}</span>
+                  @if (sortKey === 'status') {
+                    <span>
+                      @if (!sortReverse) {
+                        <span class="fa-solid fa-caret-down"></span>
+                      }
+                      @if (sortReverse) {
+                        <span class="fa-solid fa-caret-up"></span>
+                      }
+                    </span>
+                  }
+                </span>
+                @if (RTips.dataModel.length > 0) {
+                  <span class="dropdown-multi-select-container">
+                    <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownStatusModel) }" (click)="toggleStatusDropdown()"></i>
+                    <span [class.d-none]="!statusDropdownVisible">
+                      <ng-multiselect-dropdown [class.dropdown-visible]="statusDropdownVisible" [settings]="dropdownSettings" [data]="dropdownStatusData" [(ngModel)]="dropdownStatusModel" (ngModelChange)="onChanged(dropdownStatusModel,'Status')"></ng-multiselect-dropdown>
+                    </span>
+                  </span>
+                }
+              </th>
               <th class="TipInfoSubmissionDate">
                 <span (click)="sortKey = 'creation_date'; sortReverse = !sortReverse">
                   <i class="fa-solid fa-clock"></i>
@@ -253,6 +279,9 @@
                 <td class="TipInfoLabel">{{tip.label4}}</td>
                 <td class="TipInfoLabel">{{tip.label5}}</td>
                 <td class="TipInfoLabel">{{tip.label6}}</td>
+                <td class="TipInfoLabel">
+                  <span class="status-badge status-badge-{{tip.status}}">{{tip.submissionStatusStr}}</span>
+                </td>
                 <td class="TipInfoLabel">{{tip.creation_date | date:'yyyy-MM-dd'}}</td>
               </tr>
             }
