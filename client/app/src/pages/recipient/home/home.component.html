@@ -37,7 +37,7 @@
                     <span class="dropdown-multi-select-container">
                       <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownContextModel) }" (click)="toggleChannelDropdown()"></i>
                       <span [class.d-none]="!channelDropdownVisible">
-                        <ng-multiselect-dropdown [class.dropdown-visible]="channelDropdownVisible" [settings]="dropdownSettings" [data]="dropdownContextData" [(ngModel)]="dropdownContextModel" (ngModelChange)="onChanged(dropdownContextModel,'Channel')"></ng-multiselect-dropdown>
+                        <ng-multiselect-dropdown [class.dropdown-visible]="channelDropdownVisible" [settings]="dropdownSettings" [data]="dropdownContextData" [(ngModel)]="dropdownContextModel" (ngModelChange)="onChanged()"></ng-multiselect-dropdown>
                       </span>
                     </span>
                   }
@@ -67,7 +67,7 @@
                         <ng-multiselect-dropdown [class.dropdown-visible]="label1DropdownVisible"
                             [settings]="dropdownSettings" [data]="dropdownLabel1Data"
                             [(ngModel)]="dropdownLabel1Model"
-                            (ngModelChange)="onChanged(dropdownLabel1Model,'Label1')">
+                            (ngModelChange)="onChanged()">
                         </ng-multiselect-dropdown>
                     </span>
                 </span>
@@ -96,7 +96,7 @@
                         <ng-multiselect-dropdown [class.dropdown-visible]="label2DropdownVisible"
                             [settings]="dropdownSettings" [data]="dropdownLabel2Data"
                             [(ngModel)]="dropdownLabel2Model"
-                            (ngModelChange)="onChanged(dropdownLabel2Model,'Label2')">
+                            (ngModelChange)="onChanged()">
                         </ng-multiselect-dropdown>
                     </span>
                 </span>
@@ -125,7 +125,7 @@
                         <ng-multiselect-dropdown [class.dropdown-visible]="label3DropdownVisible"
                             [settings]="dropdownSettings" [data]="dropdownLabel3Data"
                             [(ngModel)]="dropdownLabel3Model"
-                            (ngModelChange)="onChanged(dropdownLabel3Model,'Label3')">
+                            (ngModelChange)="onChanged()">
                         </ng-multiselect-dropdown>
                     </span>
                 </span>
@@ -154,7 +154,7 @@
                         <ng-multiselect-dropdown [class.dropdown-visible]="label4DropdownVisible"
                             [settings]="dropdownSettings" [data]="dropdownLabel4Data"
                             [(ngModel)]="dropdownLabel4Model"
-                            (ngModelChange)="onChanged(dropdownLabel4Model,'Label4')">
+                            (ngModelChange)="onChanged()">
                         </ng-multiselect-dropdown>
                     </span>
                 </span>
@@ -184,7 +184,7 @@
                         <ng-multiselect-dropdown [class.dropdown-visible]="label5DropdownVisible"
                             [settings]="dropdownSettings" [data]="dropdownLabel5Data"
                             [(ngModel)]="dropdownLabel5Model"
-                            (ngModelChange)="onChanged(dropdownLabel5Model,'Label5')">
+                            (ngModelChange)="onChanged()">
                         </ng-multiselect-dropdown>
                     </span>
                 </span>
@@ -213,7 +213,7 @@
                         <ng-multiselect-dropdown [class.dropdown-visible]="label6DropdownVisible"
                             [settings]="dropdownSettings" [data]="dropdownLabel6Data"
                             [(ngModel)]="dropdownLabel6Model"
-                            (ngModelChange)="onChanged(dropdownLabel6Model,'Label6')">
+                            (ngModelChange)="onChanged()">
                         </ng-multiselect-dropdown>
                     </span>
                 </span>
@@ -238,7 +238,7 @@
                   <span class="dropdown-multi-select-container">
                     <i class="fa-solid fa-filter" [ngClass]="{ filterSelected: checkFilter(dropdownStatusModel) }" (click)="toggleStatusDropdown()"></i>
                     <span [class.d-none]="!statusDropdownVisible">
-                      <ng-multiselect-dropdown [class.dropdown-visible]="statusDropdownVisible" [settings]="dropdownSettings" [data]="dropdownStatusData" [(ngModel)]="dropdownStatusModel" (ngModelChange)="onChanged(dropdownStatusModel,'Status')"></ng-multiselect-dropdown>
+                      <ng-multiselect-dropdown [class.dropdown-visible]="statusDropdownVisible" [settings]="dropdownSettings" [data]="dropdownStatusData" [(ngModel)]="dropdownStatusModel" (ngModelChange)="onChanged()"></ng-multiselect-dropdown>
                     </span>
                   </span>
                 }

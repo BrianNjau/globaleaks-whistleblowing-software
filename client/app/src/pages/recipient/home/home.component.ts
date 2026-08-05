@@ -110,8 +110,8 @@ export class HomeComponent implements OnInit {
     }
     if (this.RTips.dataModel) {
       this.filteredTips = this.RTips.dataModel;
-      console.log("RTips.dataModel:", this.RTips.dataModel);
       this.processTips();
+      this.initDropdownData();
     }
     if (this.appDataService.public.node.user_privacy_policy_text && this.preferenceData.accepted_privacy_policy === "1970-01-01T00:00:00Z") {
      this.utilsService.acceptPrivacyPolicyDialog().subscribe();
@@ -143,52 +143,45 @@ export class HomeComponent implements OnInit {
   isSelected(id: string): boolean {
     return this.selectedTips.indexOf(id) !== -1;
   }
+  // Derives context_name and submissionStatusStr on each tip. Safe to call repeatedly.
   processTips() {
-    const uniqueKeys: string[] = [];
-
     for (const tip of this.RTips.dataModel) {
       tip.context = this.appDataService.contexts_by_id[tip.context_id];
       tip.context_name = tip.context.name;
       tip.submissionStatusStr = this.utils.getSubmissionStatusText(tip.status, tip.substatus, this.appDataService.submissionStatuses);
-      if (!uniqueKeys.includes(tip.submissionStatusStr)) {
-        uniqueKeys.push(tip.submissionStatusStr);
-        this.dropdownStatusData.push({id: this.dropdownStatusData.length + 1, label: tip.submissionStatusStr});
-      }
-      if (!uniqueKeys.includes(tip.context_name)) {
-        uniqueKeys.push(tip.context_name);
-        this.dropdownContextData.push({id: this.dropdownContextData.length + 1, label: tip.context_name});
-      }
-      if (!uniqueKeys.includes(tip.label1)) {
-        uniqueKeys.push(tip.label1);
-        this.dropdownLabel1Data.push({id: this.dropdownLabel1Data.length + 1, label: tip.label1});
-      }
-      if (!uniqueKeys.includes(tip.label2)) {
-        uniqueKeys.push(tip.label2);
-        this.dropdownLabel2Data.push({id: this.dropdownLabel2Data.length + 1, label: tip.label2});
-      }
-      if (!uniqueKeys.includes(tip.label3)) {
-        uniqueKeys.push(tip.label3);
-        this.dropdownLabel3Data.push({id: this.dropdownLabel3Data.length + 1, label: tip.label3});
-      }
-      if (!uniqueKeys.includes(tip.label4)) {
-        uniqueKeys.push(tip.label4);
-        this.dropdownLabel4Data.push({id: this.dropdownLabel4Data.length + 1, label: tip.label4});
-      }
-      if (!uniqueKeys.includes(tip.label5)) {
-        uniqueKeys.push(tip.label5);
-        this.dropdownLabel5Data.push({id: this.dropdownLabel5Data.length + 1, label: tip.label5});
-      }
-      if (!uniqueKeys.includes(tip.label6)) {
-        uniqueKeys.push(tip.label6);
-        this.dropdownLabel6Data.push({id: this.dropdownLabel6Data.length + 1, label: tip.label6});
-      }
+    }
+  }
+
+  // Populates dropdown option lists. Called once after tips are loaded.
+  private initDropdownData() {
+    const seen = new Set<string>();
+    let statusId = 1, contextId = 1, l1Id = 1, l2Id = 1, l3Id = 1, l4Id = 1, l5Id = 1, l6Id = 1, scoreId = 1;
+
+    for (const tip of this.RTips.dataModel) {
+      const addIfNew = (key: string, push: () => void) => {
+        if (!seen.has(key)) { seen.add(key); push(); }
+      };
+
+      addIfNew("status:" + tip.submissionStatusStr, () =>
+        this.dropdownStatusData.push({id: statusId++, label: tip.submissionStatusStr}));
+      addIfNew("ctx:" + tip.context_name, () =>
+        this.dropdownContextData.push({id: contextId++, label: tip.context_name}));
+      addIfNew("l1:" + tip.label1, () =>
+        this.dropdownLabel1Data.push({id: l1Id++, label: tip.label1}));
+      addIfNew("l2:" + tip.label2, () =>
+        this.dropdownLabel2Data.push({id: l2Id++, label: tip.label2}));
+      addIfNew("l3:" + tip.label3, () =>
+        this.dropdownLabel3Data.push({id: l3Id++, label: tip.label3}));
+      addIfNew("l4:" + tip.label4, () =>
+        this.dropdownLabel4Data.push({id: l4Id++, label: tip.label4}));
+      addIfNew("l5:" + tip.label5, () =>
+        this.dropdownLabel5Data.push({id: l5Id++, label: tip.label5}));
+      addIfNew("l6:" + tip.label6, () =>
+        this.dropdownLabel6Data.push({id: l6Id++, label: tip.label6}));
 
       const scoreLabel = this.maskScore(tip.score);
-
-      if (!uniqueKeys.includes(scoreLabel)) {
-        uniqueKeys.push(scoreLabel);
-        this.dropdownScoreData.push({id: this.dropdownScoreData.length + 1, label: scoreLabel});
-      }
+      addIfNew("score:" + scoreLabel, () =>
+        this.dropdownScoreData.push({id: scoreId++, label: scoreLabel}));
     }
   }
   maskScore(score: number) {
@@ -202,102 +195,9 @@ export class HomeComponent implements OnInit {
       return this.translateService.instant("None");
     }
   }
-  //review this
-  onChanged(model: { id: number; label: string; }[], type: string) {
-    this.processTips();
-    if (model.length > 0 && type === "Score") {
-      this.dropdownLabel1Model = [];
-      this.dropdownContextModel = [];
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = model;
-    }
-    if (model.length > 0 && type === "Status") {
-      this.dropdownLabel1Model = [];
-      this.dropdownContextModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownStatusModel = model;
-    }
-    if (model.length > 0 && type === "Context") {
-      this.dropdownLabel1Model = [];
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = model;
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-    }
-    if (model.length > 0 && type === "Label1") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = model;
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-    }
-    if (model.length > 0 && type === "Label2") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = model;
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-    }
-    if (model.length > 0 && type === "Label3") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = model;
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-    }
-    if (model.length > 0 && type === "Label4") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = model;
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = [];
-    }
-    if (model.length > 0 && type === "Label5") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = model;
-      this.dropdownLabel6Model = [];
-    }
-    if (model.length > 0 && type === "Label6") {
-      this.dropdownStatusModel = [];
-      this.dropdownScoreModel = [];
-      this.dropdownContextModel = [];
-      this.dropdownLabel1Model = [];
-      this.dropdownLabel2Model = [];
-      this.dropdownLabel3Model = [];
-      this.dropdownLabel4Model = [];
-      this.dropdownLabel5Model = [];
-      this.dropdownLabel6Model = model;
-    }
+  onChanged() {
     this.applyFilter();
   }
-  //
 
   checkFilter(filter: { id: number; label: string; }[]) {
     return filter.length > 0;
