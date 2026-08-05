@@ -1,0 +1,262 @@
+<div class="charts-section mb-3">
+  <div class="charts-header d-flex align-items-center justify-content-between mb-2">
+    <span class="charts-section-title">Report Analytics</span>
+    <button class="charts-toggle btn btn-sm btn-outline-secondary" (click)="toggleCharts()">
+      <i class="fa-solid" [ngClass]="chartsVisible ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+      {{ chartsVisible ? 'Hide Charts' : 'Show Charts' }}
+    </button>
+  </div>
+
+  @if (chartsVisible) {
+    @if (!hasData) {
+      <p class="chart-nodata">No data to display.</p>
+    }
+
+    @if (hasData) {
+      <!-- Stat tiles -->
+      <div class="row g-2 mb-3">
+        <div class="col-4">
+          <div class="stat-tile">
+            <div class="stat-eyebrow">Total Reports</div>
+            <div class="stat-value">{{ statTotal }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-tile">
+            <div class="stat-eyebrow">Open</div>
+            <div class="stat-value stat-value--open">{{ statOpen }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-tile">
+            <div class="stat-eyebrow">New</div>
+            <div class="stat-value stat-value--new">{{ statNew }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 1: Intake Method + Site -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Bar Chart</div>
+            <div class="chart-title">Intake Method</div>
+            <div class="bar-list">
+              @for (bar of intakeMethodBars; track bar.label) {
+                <div class="bar-row">
+                  <div class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</div>
+                  <div class="bar-track">
+                    <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor}"></div>
+                  </div>
+                  <div class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Bar Chart</div>
+            <div class="chart-title">Site</div>
+            <div class="bar-list">
+              @for (bar of siteBars; track bar.label) {
+                <div class="bar-row">
+                  <div class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</div>
+                  <div class="bar-track">
+                    <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor}"></div>
+                  </div>
+                  <div class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Case Category + Sub Category -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Bar Chart</div>
+            <div class="chart-title">Case Category</div>
+            <div class="bar-list">
+              @for (bar of caseCategoryBars; track bar.label) {
+                <div class="bar-row">
+                  <div class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</div>
+                  <div class="bar-track">
+                    <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor}"></div>
+                  </div>
+                  <div class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Bar Chart</div>
+            <div class="chart-title">Sub Category</div>
+            <div class="bar-list">
+              @for (bar of subCategoryBars; track bar.label) {
+                <div class="bar-row">
+                  <div class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</div>
+                  <div class="bar-track">
+                    <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor}"></div>
+                  </div>
+                  <div class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Assigned Investigator + Status donut -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Bar Chart</div>
+            <div class="chart-title">Assigned Investigator</div>
+            <div class="bar-list">
+              @for (bar of investigatorBars; track bar.label) {
+                <div class="bar-row">
+                  <div class="bar-label" [class.bar-label--muted]="bar.muted">{{ bar.label }}</div>
+                  <div class="bar-track">
+                    <div class="bar-fill" [ngStyle]="{'width': bar.pct + '%', 'background': barColor}"></div>
+                  </div>
+                  <div class="bar-val" [class.bar-val--muted]="bar.muted">{{ bar.count }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Donut Chart</div>
+            <div class="chart-title">Status</div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 80 80" role="img">
+                <title>Status distribution</title>
+                <circle cx="40" cy="40" [attr.r]="donutR" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+                @for (slice of statusSlices; track slice.label) {
+                  <circle cx="40" cy="40" [attr.r]="donutR" fill="none"
+                    [attr.stroke]="slice.color" stroke-width="12"
+                    [attr.stroke-dasharray]="slice.dasharray"
+                    [attr.stroke-dashoffset]="slice.dashoffset"
+                    transform="rotate(-90 40 40)">
+                    <title>{{ slice.label }}: {{ slice.count }}</title>
+                  </circle>
+                }
+                <text x="40" y="37" text-anchor="middle" class="donut-center-value">{{ statTotal }}</text>
+                <text x="40" y="49" text-anchor="middle" class="donut-center-label">total</text>
+              </svg>
+              <div class="donut-legend">
+                @for (slice of statusSlices; track slice.label) {
+                  <div class="legend-item">
+                    <span class="legend-dot" [ngStyle]="{'background': slice.color}"></span>
+                    <span class="legend-text">{{ slice.label }}</span>
+                    <span class="legend-val">{{ slice.count }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Gender + SGBV + Age donuts -->
+      <div class="row g-2 mb-2">
+        <div class="col-md-4">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Donut Chart</div>
+            <div class="chart-title">Gender</div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 80 80" role="img">
+                <title>Gender distribution</title>
+                <circle cx="40" cy="40" [attr.r]="donutR" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+                @for (slice of genderSlices; track slice.label) {
+                  <circle cx="40" cy="40" [attr.r]="donutR" fill="none"
+                    [attr.stroke]="slice.color" stroke-width="12"
+                    [attr.stroke-dasharray]="slice.dasharray"
+                    [attr.stroke-dashoffset]="slice.dashoffset"
+                    transform="rotate(-90 40 40)">
+                    <title>{{ slice.label }}: {{ slice.count }}</title>
+                  </circle>
+                }
+              </svg>
+              <div class="donut-legend">
+                @for (slice of genderSlices; track slice.label) {
+                  <div class="legend-item">
+                    <span class="legend-dot" [ngStyle]="{'background': slice.color}"></span>
+                    <span class="legend-text">{{ slice.label }}</span>
+                    <span class="legend-val">{{ slice.count }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Donut Chart</div>
+            <div class="chart-title">SGBV</div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 80 80" role="img">
+                <title>SGBV distribution</title>
+                <circle cx="40" cy="40" [attr.r]="donutR" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+                @for (slice of sgbvSlices; track slice.label) {
+                  <circle cx="40" cy="40" [attr.r]="donutR" fill="none"
+                    [attr.stroke]="slice.color" stroke-width="12"
+                    [attr.stroke-dasharray]="slice.dasharray"
+                    [attr.stroke-dashoffset]="slice.dashoffset"
+                    transform="rotate(-90 40 40)">
+                    <title>{{ slice.label }}: {{ slice.count }}</title>
+                  </circle>
+                }
+              </svg>
+              <div class="donut-legend">
+                @for (slice of sgbvSlices; track slice.label) {
+                  <div class="legend-item">
+                    <span class="legend-dot" [ngStyle]="{'background': slice.color}"></span>
+                    <span class="legend-text">{{ slice.label }}</span>
+                    <span class="legend-val">{{ slice.count }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="chart-card">
+            <div class="chart-eyebrow">Donut Chart</div>
+            <div class="chart-title">Age Group</div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 80 80" role="img">
+                <title>Age distribution</title>
+                <circle cx="40" cy="40" [attr.r]="donutR" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+                @for (slice of ageSlices; track slice.label) {
+                  <circle cx="40" cy="40" [attr.r]="donutR" fill="none"
+                    [attr.stroke]="slice.color" stroke-width="12"
+                    [attr.stroke-dasharray]="slice.dasharray"
+                    [attr.stroke-dashoffset]="slice.dashoffset"
+                    transform="rotate(-90 40 40)">
+                    <title>{{ slice.label }}: {{ slice.count }}</title>
+                  </circle>
+                }
+              </svg>
+              <div class="donut-legend">
+                @for (slice of ageSlices; track slice.label) {
+                  <div class="legend-item">
+                    <span class="legend-dot" [ngStyle]="{'background': slice.color}"></span>
+                    <span class="legend-text">{{ slice.label }}</span>
+                    <span class="legend-val">{{ slice.count }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

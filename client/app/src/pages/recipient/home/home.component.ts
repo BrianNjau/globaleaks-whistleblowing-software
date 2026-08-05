@@ -1,4 +1,5 @@
 import { Component, OnInit, HostListener, inject } from "@angular/core";
+import { HomeChartsComponent } from "./home-charts.component";
 import { AppDataService } from "@app/app-data.service";
 import { preferenceResolverModel } from "@app/models/resolvers/preference-resolver-model";
 import { PreferenceResolver } from "@app/shared/resolvers/preference.resolver";
@@ -52,6 +53,7 @@ import { YearlyReportIDPipe } from "@app/shared/pipes/yearly-report-id.pipe";
     OrderByPipe,
     DateRangeSelectorComponent,
     YearlyReportIDPipe,
+    HomeChartsComponent,
   ],
 })
 export class HomeComponent implements OnInit {
@@ -132,8 +134,8 @@ export class HomeComponent implements OnInit {
     }
     if (this.RTips.dataModel) {
       this.filteredTips = this.RTips.dataModel;
-      console.log("RTips.dataModel:", this.RTips.dataModel);
       this.processTips();
+      this.initDropdownData();
 
       // Pre-select all channels except Conflict of Interest
       const conflictContext = this.appDataService.public.contexts.find(
@@ -141,12 +143,10 @@ export class HomeComponent implements OnInit {
       );
 
       if (conflictContext) {
-        // Select all channels except Conflict of Interest
         this.dropdownContextModel = this.dropdownContextData.filter(
           (item) => !item.label.toLowerCase().includes("conflict of interest")
         );
 
-        // Apply the filter if we have channels selected
         if (this.dropdownContextModel.length > 0) {
           this.applyFilter();
         }
@@ -186,8 +186,6 @@ export class HomeComponent implements OnInit {
     return this.selectedTips.indexOf(id) !== -1;
   }
   processTips() {
-    const uniqueKeys: string[] = [];
-
     for (const tip of this.RTips.dataModel) {
       tip.context = this.appDataService.contexts_by_id[tip.context_id];
       tip.context_name = tip.context.name;
@@ -196,86 +194,42 @@ export class HomeComponent implements OnInit {
         tip.substatus,
         this.appDataService.submissionStatuses
       );
-      if (!uniqueKeys.includes(tip.submissionStatusStr)) {
-        uniqueKeys.push(tip.submissionStatusStr);
-        this.dropdownStatusData.push({
-          id: this.dropdownStatusData.length + 1,
-          label: tip.submissionStatusStr,
-        });
-      }
-      if (!uniqueKeys.includes(tip.context_name)) {
-        uniqueKeys.push(tip.context_name);
-        this.dropdownContextData.push({
-          id: this.dropdownContextData.length + 1,
-          label: tip.context_name,
-        });
-      }
-      if (!uniqueKeys.includes(tip.label1)) {
-        uniqueKeys.push(tip.label1);
-        this.dropdownLabel1Data.push({
-          id: this.dropdownLabel1Data.length + 1,
-          label: tip.label1,
-        });
-      }
-      if (!uniqueKeys.includes(tip.label2)) {
-        uniqueKeys.push(tip.label2);
-        this.dropdownLabel2Data.push({
-          id: this.dropdownLabel2Data.length + 1,
-          label: tip.label2,
-        });
-      }
-      if (!uniqueKeys.includes(tip.label3)) {
-        uniqueKeys.push(tip.label3);
-        this.dropdownLabel3Data.push({
-          id: this.dropdownLabel3Data.length + 1,
-          label: tip.label3,
-        });
-      }
-      if (!uniqueKeys.includes(tip.label4)) {
-        uniqueKeys.push(tip.label4);
-        this.dropdownLabel4Data.push({
-          id: this.dropdownLabel4Data.length + 1,
-          label: tip.label4,
-        });
-      }
-      if (!uniqueKeys.includes(tip.label5)) {
-        uniqueKeys.push(tip.label5);
-        this.dropdownLabel5Data.push({
-          id: this.dropdownLabel5Data.length + 1,
-          label: tip.label5,
-        });
-      }
-      if (!uniqueKeys.includes(tip.label6)) {
-        uniqueKeys.push(tip.label6);
-        this.dropdownLabel6Data.push({
-          id: this.dropdownLabel6Data.length + 1,
-          label: tip.label6,
-        });
-      }
-      if (!uniqueKeys.includes(tip.label7)) {
-        uniqueKeys.push(tip.label7);
-        this.dropdownLabel7Data.push({
-          id: this.dropdownLabel7Data.length + 1,
-          label: tip.label7,
-        });
-      }
-      if (!uniqueKeys.includes(tip.label8)) {
-        uniqueKeys.push(tip.label8);
-        this.dropdownLabel8Data.push({
-          id: this.dropdownLabel8Data.length + 1,
-          label: tip.label8,
-        });
-      }
+    }
+  }
 
+  private initDropdownData() {
+    const seen = new Set<string>();
+    let statusId = 1, contextId = 1, l1Id = 1, l2Id = 1, l3Id = 1,
+        l4Id = 1, l5Id = 1, l6Id = 1, l7Id = 1, l8Id = 1, scoreId = 1;
+
+    const addIfNew = (key: string, push: () => void) => {
+      if (!seen.has(key)) { seen.add(key); push(); }
+    };
+
+    for (const tip of this.RTips.dataModel) {
+      addIfNew("status:" + tip.submissionStatusStr, () =>
+        this.dropdownStatusData.push({ id: statusId++, label: tip.submissionStatusStr }));
+      addIfNew("ctx:" + tip.context_name, () =>
+        this.dropdownContextData.push({ id: contextId++, label: tip.context_name }));
+      addIfNew("l1:" + tip.label1, () =>
+        this.dropdownLabel1Data.push({ id: l1Id++, label: tip.label1 }));
+      addIfNew("l2:" + tip.label2, () =>
+        this.dropdownLabel2Data.push({ id: l2Id++, label: tip.label2 }));
+      addIfNew("l3:" + tip.label3, () =>
+        this.dropdownLabel3Data.push({ id: l3Id++, label: tip.label3 }));
+      addIfNew("l4:" + tip.label4, () =>
+        this.dropdownLabel4Data.push({ id: l4Id++, label: tip.label4 }));
+      addIfNew("l5:" + tip.label5, () =>
+        this.dropdownLabel5Data.push({ id: l5Id++, label: tip.label5 }));
+      addIfNew("l6:" + tip.label6, () =>
+        this.dropdownLabel6Data.push({ id: l6Id++, label: tip.label6 }));
+      addIfNew("l7:" + tip.label7, () =>
+        this.dropdownLabel7Data.push({ id: l7Id++, label: tip.label7 }));
+      addIfNew("l8:" + tip.label8, () =>
+        this.dropdownLabel8Data.push({ id: l8Id++, label: tip.label8 }));
       const scoreLabel = this.maskScore(tip.score);
-
-      if (!uniqueKeys.includes(scoreLabel)) {
-        uniqueKeys.push(scoreLabel);
-        this.dropdownScoreData.push({
-          id: this.dropdownScoreData.length + 1,
-          label: scoreLabel,
-        });
-      }
+      addIfNew("score:" + scoreLabel, () =>
+        this.dropdownScoreData.push({ id: scoreId++, label: scoreLabel }));
     }
   }
   maskScore(score: number) {
@@ -289,46 +243,7 @@ export class HomeComponent implements OnInit {
       return this.translateService.instant("None");
     }
   }
-  onChanged(model: { id: number; label: string }[], type: string) {
-    this.processTips();
-    switch (type) {
-      case "Score":
-        this.dropdownScoreModel = model;
-        break;
-      case "Status":
-        this.dropdownStatusModel = model;
-        break;
-      case "Context":
-      case "Channel":
-        this.dropdownContextModel = model;
-        break;
-      case "Label1":
-        this.dropdownLabel1Model = model;
-        break;
-      case "Label2":
-        this.dropdownLabel2Model = model;
-        break;
-      case "Label3":
-        this.dropdownLabel3Model = model;
-        break;
-      case "Label4":
-        this.dropdownLabel4Model = model;
-        break;
-      case "Label5":
-        this.dropdownLabel5Model = model;
-        break;
-      case "Label6":
-        this.dropdownLabel6Model = model;
-        break;
-      case "Label7":
-      case "label7":
-        this.dropdownLabel7Model = model;
-        break;
-      case "Label8":
-      case "label8":
-        this.dropdownLabel8Model = model;
-        break;
-    }
+  onChanged() {
     this.applyFilter();
   }
 
@@ -451,7 +366,6 @@ export class HomeComponent implements OnInit {
     if (typeof search !== "undefined") {
       this.currentPage = 1;
       this.filteredTips = this.RTips.dataModel;
-      this.processTips();
 
       this.filteredTips = orderBy(
         filter(this.filteredTips, (tip) => {
@@ -470,7 +384,6 @@ export class HomeComponent implements OnInit {
     fromDate: string | null;
     toDate: string | null;
   }) {
-    this.processTips();
     const { fromDate, toDate } = event;
     if (!fromDate && !toDate) {
       this.reportDateFilter = null;
@@ -489,7 +402,6 @@ export class HomeComponent implements OnInit {
     fromDate: string | null;
     toDate: string | null;
   }) {
-    this.processTips();
     const { fromDate, toDate } = event;
     if (!fromDate && !toDate) {
       this.updateDateFilter = null;
@@ -508,7 +420,6 @@ export class HomeComponent implements OnInit {
     fromDate: string | null;
     toDate: string | null;
   }) {
-    this.processTips();
     const { fromDate, toDate } = event;
     if (!fromDate && !toDate) {
       this.expiryDateFilter = null;
