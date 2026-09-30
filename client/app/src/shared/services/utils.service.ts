@@ -731,7 +731,8 @@ export class UtilsService {
       return;
     }
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    // UTF-8 BOM so Excel detects the encoding and renders accented characters correctly
+    const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
     link.download = `${fileName}.csv`;

@@ -399,8 +399,32 @@ export class TipsComponent implements OnInit {
     this.expirationDatePicker = false;
   }
 
+  // Maps each exported field to its column header
+  private readonly csvColumns: [string, string][] = [
+    ['id', 'Id'],
+    ['progressive', 'Sequential'],
+    ['important', 'Important'],
+    ['reportStatus', 'Reminder'],
+    ['context_name', 'Channel'],
+    ['label', 'Label'],
+    ['status', 'Report Status'],
+    ['creation_date', 'Date of Report'],
+    ['update_date', 'Last Update'],
+    ['expiration_date', 'Expiration date'],
+    ['last_access', 'Last Access'],
+    ['comment_count', 'Number of Comments'],
+    ['file_count', 'Number of Files'],
+    ['subscription', 'Subscription'],
+    ['receiver_count', 'Number of Recipients']
+  ];
+
   exportToCsv(): void {
-    this.utils.generateCSV('reports', this.getDataCsv(), this.getDataCsvHeaders());
+    const headers = this.getDataCsvHeaders();
+    // generateCSV looks up cells by header, so key each row by the translated headers
+    const rows = this.getDataCsv().map(tip =>
+      Object.fromEntries(this.csvColumns.map(([key], i) => [headers[i], tip[key]]))
+    );
+    this.utils.generateCSV('reports', rows, headers);
   }
 
   getDataCsv(): any[] {
@@ -431,22 +455,6 @@ export class TipsComponent implements OnInit {
   }
 
   getDataCsvHeaders(): string[] {
-    return [
-      'Id',
-      'Sequential',
-      'Important',
-      'Reminder',
-      'Channel',
-      'Label',
-      'Report Status',
-      'Date of Report',
-      'Last Update',
-      'Expiration date',
-      'Last Access',
-      'Number of Comments',
-      'Number of Files',
-      'Subscription',
-      'Number of Recipients'
-    ].map(header => header ? this.translateService.instant(header) : '');
+    return this.csvColumns.map(([, header]) => this.translateService.instant(header));
   }
 }
