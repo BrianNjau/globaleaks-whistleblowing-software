@@ -552,9 +552,39 @@ export class TipsComponent implements OnInit {
     this.expirationDatePicker = false;
   }
 
+  // Maps each exported field to its column header
+  private readonly csvColumns: [string, string][] = [
+    ["id", "Id"],
+    ["progressive", "Sequential"],
+    ["important", "Important"],
+    ["reportStatus", "Reminder"],
+    ["context_name", "Channel"],
+    ["label1", "Intake Method"],
+    ["label2", "Site"],
+    ["label3", "Case Category"],
+    ["label4", "Sub Category"],
+    ["label5", "Gender"],
+    ["label6", "Assigned Investigator"],
+    ["label7", "SGBV"],
+    ["label8", "Age"],
+    ["status", "Report Status"],
+    ["creation_date", "Date of Report"],
+    ["update_date", "Last Update"],
+    ["expiration_date", "Expiration date"],
+    ["last_access", "Last Access"],
+    ["comment_count", "Number of Comments"],
+    ["file_count", "Number of Files"],
+    ["subscription", "Subscription"],
+    ["receiver_count", "Number of Recipients"],
+  ];
+
   exportToCsv(): void {
+    // generateCSV writes fields in key order, so build each row in column order
+    const rows = this.getDataCsv().map((tip) =>
+      Object.fromEntries(this.csvColumns.map(([key]) => [key, tip[key] ?? ""]))
+    );
     this.utils.generateCSV(
-      JSON.stringify(this.getDataCsv()),
+      JSON.stringify(rows),
       "reports",
       this.getDataCsvHeaders()
     );
@@ -584,7 +614,6 @@ export class TipsComponent implements OnInit {
       important: tip.important,
       reportStatus: this.utils.isDatePassed(tip.reminder_date),
       context_name: tip.context_name,
-      label: tip.label,
       label1: tip.label1,
       label2: tip.label2,
       label3: tip.label3,
@@ -615,28 +644,8 @@ export class TipsComponent implements OnInit {
   }
 
   getDataCsvHeaders(): string[] {
-    return [
-      "Id",
-      "Sequential",
-      "Important",
-      "Reminder",
-      "Channel",
-      "Label",
-      "Site",
-      "Sub-site",
-      "Issue type",
-      "Sub-issue type",
-      "Priority",
-      "Assigned Investigator",
-      "Report Status",
-      "Date of Report",
-      "Last Update",
-      "Expiration date",
-      "Last Access",
-      "Number of Comments",
-      "Number of Files",
-      "Subscription",
-      "Number of Recipients",
-    ].map((header) => (header ? this.translateService.instant(header) : ""));
+    return this.csvColumns.map(([, header]) =>
+      this.translateService.instant(header)
+    );
   }
 }

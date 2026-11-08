@@ -704,16 +704,23 @@ export class UtilsService {
       return;
     }
 
+    // Quote values containing separators so they stay in a single cell
+    const escapeCell = (cell: unknown): string => {
+      const value = String(cell ?? '');
+      return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+    };
+
     const headers = Object.keys(data[0] || {});
-    const newHeader = headerx.join(',');
-    const csvContent = `${newHeader ? `${newHeader}\n` : ""}${data.map(row => headers.map(header => row[header]).join(',')).join('\n')}`;
+    const newHeader = headerx.map(escapeCell).join(',');
+    const csvContent = `${newHeader ? `${newHeader}\n` : ""}${data.map(row => headers.map(header => escapeCell(row[header])).join(',')).join('\n')}`;
 
     if (!csvContent.trim()) {
       console.warn('No data to export');
       return;
     }
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    // UTF-8 BOM so Excel detects the encoding and renders accented characters correctly
+    const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
     link.download = `${fileName}.csv`;
