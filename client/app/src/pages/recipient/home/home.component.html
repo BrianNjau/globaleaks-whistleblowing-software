@@ -11,6 +11,10 @@
       </div>
     </div>
 
+    @if (appDataService.public.node.ai_summary_enabled) {
+      <src-recipient-ai-summary></src-recipient-ai-summary>
+    }
+
     <src-recipient-home-charts [tips]="filteredTips"></src-recipient-home-charts>
 
     <div id="TipList" class="row mt-2">

@@ -1,5 +1,6 @@
 import { Component, OnInit, HostListener, inject } from "@angular/core";
 import { HomeChartsComponent } from "./home-charts.component";
+import { AiSummaryComponent } from "./ai-summary.component";
 import { AppDataService } from "@app/app-data.service";
 import { preferenceResolverModel } from "@app/models/resolvers/preference-resolver-model";
 import { PreferenceResolver } from "@app/shared/resolvers/preference.resolver";
@@ -54,6 +55,7 @@ import { YearlyReportIDPipe } from "@app/shared/pipes/yearly-report-id.pipe";
     DateRangeSelectorComponent,
     YearlyReportIDPipe,
     HomeChartsComponent,
+    AiSummaryComponent,
   ],
 })
 export class HomeComponent implements OnInit {
