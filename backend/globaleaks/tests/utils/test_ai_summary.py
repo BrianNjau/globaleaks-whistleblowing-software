@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from twisted.trial import unittest
 
 from globaleaks.utils import ai_summary
-from globaleaks.utils.ai_summary import build_payload, case_reference, redact, restore_placeholders
+from globaleaks.utils.ai_summary import build_payload, case_reference, compute_metrics, redact, restore_placeholders
 
 NOW = datetime(2026, 11, 17, 12, 0)
 NEVER = datetime(3000, 1, 1)
@@ -122,6 +122,34 @@ class TestAISummaryPayload(unittest.TestCase):
         self.assertEqual(payload['totals']['cases'], ai_summary.MAX_CASES_LISTED + 5)
         self.assertEqual(len(payload['cases']), ai_summary.MAX_CASES_LISTED)
         self.assertEqual(payload['cases_listed'], ai_summary.MAX_CASES_LISTED)
+
+
+class TestAISummaryMetrics(unittest.TestCase):
+    def test_metrics(self):
+        tips = [
+            make_tip(id='open-1', creation_date=NOW - timedelta(days=10)),
+            make_tip(id='open-2', status='new', creation_date=NOW - timedelta(days=30)),
+            make_tip(id='closed-1', status='closed', creation_date=NOW - timedelta(days=50)),
+            make_tip(id='closed-2', status='closed', creation_date=NOW - timedelta(days=40)),
+            make_tip(id='closed-unknown', status='closed', creation_date=NOW - timedelta(days=400)),
+            make_tip(id='not-assigned', creation_date=NOW - timedelta(days=900), accessible=False),
+        ]
+        closing_dates = {
+            'closed-1': NOW - timedelta(days=30),  # closed after 20 days
+            'closed-2': NOW - timedelta(days=10),  # closed after 30 days
+            'not-assigned': NOW,
+        }
+
+        self.assertEqual(compute_metrics(tips, closing_dates, NOW),
+                         {'avg_days_to_close': 25, 'avg_days_open': 20, 'oldest_open_days': 30})
+
+    def test_metrics_without_closed_or_open_cases(self):
+        self.assertEqual(compute_metrics([make_tip()], {}, NOW),
+                         {'avg_days_to_close': None, 'avg_days_open': 10, 'oldest_open_days': 10})
+
+        closed = [make_tip(id='c', status='closed', creation_date=NOW - timedelta(days=5))]
+        self.assertEqual(compute_metrics(closed, {'c': NOW}, NOW),
+                         {'avg_days_to_close': 5, 'avg_days_open': None, 'oldest_open_days': None})
 
 
 class TestAISummaryHelpers(unittest.TestCase):
