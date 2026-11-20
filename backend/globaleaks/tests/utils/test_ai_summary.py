@@ -1,11 +1,15 @@
+import io
 import json
+import urllib.error
 
 from datetime import datetime, timedelta
+from unittest import mock
 
 from twisted.trial import unittest
 
 from globaleaks.utils import ai_summary
-from globaleaks.utils.ai_summary import build_payload, case_reference, compute_metrics, redact, restore_placeholders
+from globaleaks.utils.ai_summary import AISummaryError, build_payload, case_reference, compute_metrics, \
+    redact, request_summary, restore_placeholders
 
 NOW = datetime(2026, 11, 17, 12, 0)
 NEVER = datetime(3000, 1, 1)
@@ -143,6 +147,13 @@ class TestAISummaryMetrics(unittest.TestCase):
         self.assertEqual(compute_metrics(tips, closing_dates, NOW),
                          {'avg_days_to_close': 25, 'avg_days_open': 20, 'oldest_open_days': 30})
 
+    def test_average_never_exceeds_oldest(self):
+        tips = [make_tip(creation_date=NOW - timedelta(days=2, hours=14)),
+                make_tip(creation_date=NOW - timedelta(days=2, hours=13))]
+        metrics = compute_metrics(tips, {}, NOW)
+
+        self.assertEqual((metrics['avg_days_open'], metrics['oldest_open_days']), (3, 3))
+
     def test_metrics_without_closed_or_open_cases(self):
         self.assertEqual(compute_metrics([make_tip()], {}, NOW),
                          {'avg_days_to_close': None, 'avg_days_open': 10, 'oldest_open_days': 10})
@@ -150,6 +161,94 @@ class TestAISummaryMetrics(unittest.TestCase):
         closed = [make_tip(id='c', status='closed', creation_date=NOW - timedelta(days=5))]
         self.assertEqual(compute_metrics(closed, {'c': NOW}, NOW),
                          {'avg_days_to_close': 5, 'avg_days_open': None, 'oldest_open_days': None})
+
+
+def api_reply(bullets, stop_reason='end_turn'):
+    content = [{'type': 'thinking', 'thinking': '...', 'signature': 'x'},
+               {'type': 'text', 'text': json.dumps({'bullets': bullets})}]
+    return io.BytesIO(json.dumps({'content': content, 'stop_reason': stop_reason}).encode())
+
+
+def http_error(code):
+    return urllib.error.HTTPError(ai_summary.API_URL, code, 'error', {}, io.BytesIO(b'{}'))
+
+
+class TestAISummaryProxy(unittest.TestCase):
+    def proxies(self, environ):
+        with mock.patch.dict('os.environ', environ, clear=True), \
+             mock.patch('globaleaks.utils.ai_summary.urllib.request.build_opener') as build_opener:
+            ai_summary.open_url(mock.Mock(), None)
+
+        handler = next(h for h in build_opener.call_args[0] if isinstance(h, ai_summary.urllib.request.ProxyHandler))
+        return handler.proxies
+
+    def test_unrelated_proxy_variables_are_ignored(self):
+        self.assertEqual(self.proxies({'DEFAULT_PROXY': 'http://unreachable:8080',
+                                       'http_proxy': 'http://unreachable:8080'}), {})
+
+    def test_https_proxy_is_used(self):
+        self.assertEqual(self.proxies({'https_proxy': 'http://proxy:3128'}), {'https': 'http://proxy:3128'})
+
+
+@mock.patch('globaleaks.utils.ai_summary.time.sleep')
+@mock.patch('globaleaks.utils.ai_summary.open_url')
+class TestAISummaryRequest(unittest.TestCase):
+    def summarize(self, max_bullets=4):
+        return request_summary({'totals': {}}, {'INV-1': 'Jane Wanjiru'}, 'English', 'test-key', max_bullets)
+
+    def test_request_and_response(self, urlopen, sleep):
+        urlopen.return_value = api_reply([' INV-1 has 2 cases ', '', 'b', 'c', 'd', 'e'])
+
+        self.assertEqual(self.summarize(), ['Jane Wanjiru has 2 cases', 'b', 'c', 'd'])
+
+        request = urlopen.call_args[0][0]
+        body = json.loads(request.data)
+        self.assertEqual(request.full_url, 'https://api.anthropic.com/v1/messages')
+        self.assertEqual(request.get_header('X-api-key'), 'test-key')
+        self.assertEqual(request.get_header('Anthropic-version'), ai_summary.API_VERSION)
+        self.assertEqual(body['model'], 'claude-haiku-5-5')
+        self.assertEqual(body['output_config']['effort'], 'low')
+        self.assertEqual(body['output_config']['format']['type'], 'json_schema')
+        self.assertTrue(body['messages'][0]['content'].startswith('Write at most 4 bullets, in English.'))
+        self.assertNotIn('Jane Wanjiru', request.data.decode())
+        for key in ['temperature', 'top_p', 'top_k']:
+            self.assertNotIn(key, body)
+
+    def test_retries_then_succeeds(self, urlopen, sleep):
+        urlopen.side_effect = [http_error(529), urllib.error.URLError('down'), api_reply(['ok'])]
+
+        self.assertEqual(self.summarize(), ['ok'])
+        self.assertEqual(urlopen.call_count, 3)
+
+    def test_client_errors_are_not_retried(self, urlopen, sleep):
+        urlopen.side_effect = [http_error(401)]
+
+        with self.assertRaises(AISummaryError) as e:
+            self.summarize()
+
+        self.assertEqual(e.exception.reason, 'provider_error')
+        self.assertEqual(urlopen.call_count, 1)
+
+    def test_gives_up_after_retries(self, urlopen, sleep):
+        urlopen.side_effect = [http_error(500)] * (ai_summary.API_RETRIES + 1)
+
+        with self.assertRaises(AISummaryError):
+            self.summarize()
+
+        self.assertEqual(urlopen.call_count, ai_summary.API_RETRIES + 1)
+
+    def test_refusal_and_bad_output(self, urlopen, sleep):
+        for reply, reason in [(api_reply([], 'refusal'), 'refused'),
+                              (api_reply(['x'], 'max_tokens'), 'provider_error'),
+                              (io.BytesIO(b'{"content": [{"type": "text", "text": "not json"}]}'), 'provider_error'),
+                              (io.BytesIO(b'not json'), 'provider_error')]:
+            urlopen.side_effect = None
+            urlopen.return_value = reply
+
+            with self.assertRaises(AISummaryError) as e:
+                self.summarize()
+
+            self.assertEqual(e.exception.reason, reason)
 
 
 class TestAISummaryHelpers(unittest.TestCase):

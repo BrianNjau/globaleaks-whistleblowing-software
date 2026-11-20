@@ -21,7 +21,7 @@ const GENERIC_ERROR = "The summary could not be generated. Please try again late
 
 const ERROR_MESSAGES: Record<string, string> = {
   no_cases: "There are no reports assigned to you to summarize.",
-  not_configured: "The AI summary is not configured on this server.",
+  not_configured: "AI summary not configured. Speak to support.",
   anonymized_network: "The AI summary is unavailable while outgoing connections are routed through Tor.",
 };
 

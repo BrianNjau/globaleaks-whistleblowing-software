@@ -4,11 +4,25 @@
 # Claude for a short bullet summary of it. Only fields allowlisted here are
 # ever sent: report answers, identities, comments, files, report ids and
 # recipient names never leave the server.
+#
+# The API is called with the Python standard library only, so that the
+# feature needs no extra package and runs on every distribution the
+# GlobaLeaks packages target.
 import json
 import re
+import ssl
+import time
+import urllib.error
+import urllib.request
 
 from datetime import timedelta
 
+from globaleaks.utils.log import log
+
+API_URL = 'https://api.anthropic.com/v1/messages'
+API_VERSION = '2026-10-21'
+API_TIMEOUT = 60
+API_RETRIES = 2
 MODEL = 'claude-haiku-5-5'
 MAX_CASES_LISTED = 200
 MAX_LABEL_LENGTH = 60
@@ -181,8 +195,13 @@ def build_payload(tips, channel_names, status_labels, substatus_labels, now):
     return payload, placeholders
 
 
+def days(seconds):
+    """Seconds as a whole number of days, rounded the same way for every metric"""
+    return round(seconds / 86400)
+
+
 def average_days(deltas):
-    return round(sum(d.total_seconds() for d in deltas) / len(deltas) / 86400) if deltas else None
+    return days(sum(d.total_seconds() for d in deltas) / len(deltas)) if deltas else None
 
 
 def compute_metrics(tips, closing_dates, now):
@@ -203,7 +222,7 @@ def compute_metrics(tips, closing_dates, now):
     return {
         'avg_days_to_close': average_days(closing_times),
         'avg_days_open': average_days(open_ages),
-        'oldest_open_days': max(open_ages).days if open_ages else None,
+        'oldest_open_days': days(max(open_ages).total_seconds()) if open_ages else None,
     }
 
 
@@ -219,40 +238,121 @@ def request_summary(payload, placeholders, language_name, api_key, max_bullets):
     :param max_bullets: The number of bullets left after the computed metrics
     :return: The list of bullets with pseudonyms restored
     """
-    try:
-        import anthropic
-        from pydantic import BaseModel
-    except ImportError:
-        raise AISummaryError('sdk_missing')
-
-    class Summary(BaseModel):
-        bullets: list[str]
-
-    client = anthropic.Anthropic(api_key=api_key, timeout=60.0, max_retries=2)
-
     content = 'Write at most %d bullets, in %s.\n\n%s' % (max_bullets,
                                                          language_name,
                                                          json.dumps(payload, sort_keys=True, default=str))
 
-    try:
-        response = client.messages.parse(
-            model=MODEL,
-            max_tokens=4096,
-            output_config={'effort': 'low'},
-            system=SYSTEM_PROMPT,
-            messages=[{'role': 'user', 'content': content}],
-            output_format=Summary,
-        )
-    except (anthropic.APIError, ValueError):
-        # ValueError covers a reply that fails validation against Summary
-        raise AISummaryError('provider_error')
+    body = {
+        'model': MODEL,
+        'max_tokens': 4096,
+        'system': SYSTEM_PROMPT,
+        'messages': [{'role': 'user', 'content': content}],
+        'output_config': {
+            'effort': 'low',
+            'format': {'type': 'json_schema', 'schema': SUMMARY_SCHEMA},
+        },
+    }
 
-    if response.stop_reason == 'refusal':
+    response = call_api(body, api_key)
+
+    if response.get('stop_reason') == 'refusal':
+        log.err('AI summary: the model declined the request')
         raise AISummaryError('refused')
 
-    if response.stop_reason == 'max_tokens' or response.parsed_output is None:
+    if response.get('stop_reason') == 'max_tokens':
+        log.err('AI summary: the response was cut off by the token limit')
         raise AISummaryError('provider_error')
 
-    bullets = [b.strip() for b in response.parsed_output.bullets if b.strip()]
+    bullets = parse_bullets(response)
 
     return [restore_placeholders(b[:MAX_BULLET_LENGTH], placeholders) for b in bullets[:max_bullets]]
+
+
+SUMMARY_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'bullets': {'type': 'array', 'items': {'type': 'string'}},
+    },
+    'required': ['bullets'],
+    'additionalProperties': False,
+}
+
+
+def open_url(request, context):
+    """
+    Open a request, through a proxy only when https_proxy is set
+
+    urlopen would honour any environment variable ending in _proxy, and one
+    such as DEFAULT_PROXY would send every request through that proxy, so the
+    proxy configuration is restricted to the one that applies to HTTPS
+    """
+    proxies = {scheme: url for scheme, url in urllib.request.getproxies().items() if scheme == 'https'}
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler(proxies),
+                                         urllib.request.HTTPSHandler(context=context))
+    return opener.open(request, timeout=API_TIMEOUT)
+
+
+def call_api(body, api_key):
+    """
+    Send a request to the Messages API, retrying on rate limits, overload,
+    server errors and network failures
+
+    :return: The decoded JSON response
+    """
+    data = json.dumps(body).encode('utf-8')
+    headers = {
+        'content-type': 'application/json',
+        'x-api-key': api_key,
+        'anthropic-version': API_VERSION,
+    }
+    context = ssl.create_default_context()
+
+    for attempt in range(API_RETRIES + 1):
+        if attempt:
+            time.sleep(2 ** attempt)
+
+        request = urllib.request.Request(API_URL, data=data, headers=headers, method='POST')
+
+        try:
+            with open_url(request, context) as response:
+                return json.loads(response.read().decode('utf-8'))
+        except urllib.error.HTTPError as e:
+            # The error body is the provider's own message (e.g. invalid key,
+            # no credit); it never contains the key or the report data
+            log.err('AI summary: request failed with HTTP %d: %s', e.code, api_error_message(e))
+            if e.code != 429 and e.code < 500:
+                break
+        except (urllib.error.URLError, OSError, ValueError) as e:
+            log.err('AI summary: request failed: %s: %s', type(e).__name__, e)
+
+    raise AISummaryError('provider_error')
+
+
+def api_error_message(error):
+    try:
+        return json.loads(error.read().decode('utf-8'))['error']['message'][:300]
+    except Exception:
+        return 'no details'
+
+
+def parse_bullets(response):
+    """
+    Extract the bullets from the structured output of a response, skipping
+    any thinking block that precedes it
+    """
+    for block in response.get('content') or []:
+        if block.get('type') != 'text':
+            continue
+
+        try:
+            bullets = json.loads(block.get('text', ''))['bullets']
+        except (ValueError, KeyError, TypeError):
+            break
+
+        if isinstance(bullets, list):
+            return [b.strip() for b in bullets if isinstance(b, str) and b.strip()]
+
+        break
+
+    log.err('AI summary: the response did not contain the expected bullets')
+    raise AISummaryError('provider_error')
