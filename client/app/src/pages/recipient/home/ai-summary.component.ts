@@ -1,19 +1,20 @@
 import { Component, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { DatePipe } from "@angular/common";
 import { TranslatorPipe } from "@app/shared/pipes/translate";
 
 interface AiSummaryMetrics {
-  avg_days_to_close: number | null;
+  avg_days_unopened: number | null;
   avg_days_open: number | null;
   oldest_open_days: number | null;
+  avg_days_to_close: number | null;
+  important: number;
+  unread_updates: number;
+  no_update_30_days: number;
 }
 
 interface AiSummaryResponse {
   metrics: AiSummaryMetrics | null;
-  bullets: string[];
   cases: number;
-  generated_at: string | null;
   error: string | null;
 }
 
@@ -21,35 +22,34 @@ const GENERIC_ERROR = "The summary could not be generated. Please try again late
 
 const ERROR_MESSAGES: Record<string, string> = {
   no_cases: "There are no reports assigned to you to summarize.",
-  not_configured: "AI summary not configured. Speak to support.",
-  anonymized_network: "The AI summary is unavailable while outgoing connections are routed through Tor.",
 };
 
-// Always shown first, in this order; a metric without data is left out
-const METRIC_LABELS: [keyof AiSummaryMetrics, string][] = [
-  ["avg_days_to_close", "Average time to close a case"],
-  ["avg_days_open", "Average time open cases have been open"],
-  ["oldest_open_days", "Oldest open case"],
+// Shown in this order; a duration without data is left out
+const METRICS: [keyof AiSummaryMetrics, string, boolean][] = [
+  ["avg_days_unopened", "Average time new cases remain unopened", true],
+  ["avg_days_open", "Average time open cases remain in open status", true],
+  ["oldest_open_days", "Oldest open case", true],
+  ["avg_days_to_close", "Average time to close cases", true],
+  ["important", "Cases marked important", false],
+  ["unread_updates", "Cases with unread updates", false],
+  ["no_update_30_days", "Cases with no updates for more than 30 days", false],
 ];
 
 @Component({
   selector: "src-recipient-ai-summary",
   templateUrl: "./ai-summary.component.html",
   standalone: true,
-  imports: [DatePipe, TranslatorPipe],
+  imports: [TranslatorPipe],
 })
 export class AiSummaryComponent {
   private http = inject(HttpClient);
 
   loading = false;
-  metrics: { label: string; days: number }[] = [];
-  bullets: string[] = [];
-  cases = 0;
-  generatedAt: string | null = null;
+  metrics: { label: string; value: number; isDays: boolean }[] = [];
   errorMessage = "";
 
   get hasContent(): boolean {
-    return this.metrics.length > 0 || this.bullets.length > 0;
+    return this.metrics.length > 0;
   }
 
   generate(): void {
@@ -61,11 +61,9 @@ export class AiSummaryComponent {
         this.loading = false;
         const metrics = res.metrics;
         this.metrics = metrics
-          ? METRIC_LABELS.filter(([key]) => metrics[key] !== null).map(([key, label]) => ({ label, days: metrics[key] as number }))
+          ? METRICS.filter(([key]) => metrics[key] !== null)
+                   .map(([key, label, isDays]) => ({ label, value: metrics[key] as number, isDays }))
           : [];
-        this.bullets = res.bullets;
-        this.cases = res.cases;
-        this.generatedAt = res.generated_at;
         if (res.error) {
           this.errorMessage = ERROR_MESSAGES[res.error] ?? GENERIC_ERROR;
         }
