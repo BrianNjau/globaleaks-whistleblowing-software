@@ -5,6 +5,7 @@ import {PreferenceResolver} from "@app/shared/resolvers/preference.resolver";
 import {UtilsService} from "@app/shared/services/utils.service";
 import {UserHomeComponent} from "@app/shared/partials/user-home/user-home.component";
 import {HomeChartsComponent} from "./home-charts.component";
+import {AiSummaryComponent} from "./ai-summary.component";
 import { RTipsResolver } from "@app/shared/resolvers/r-tips-resolver.service";
 import { rtipResolverModel } from "@app/models/resolvers/rtips-resolver-model";
 import { FormsModule } from "@angular/forms"; // Import FormsModule
@@ -37,7 +38,8 @@ import {filter, orderBy} from "lodash-es";
     DatePipe,
     TranslatorPipe,
     OrderByPipe,
-    DateRangeSelectorComponent
+    DateRangeSelectorComponent,
+    AiSummaryComponent
     ]
 })
 export class HomeComponent implements OnInit {

@@ -53,6 +53,7 @@ ConfigDescriptor = {
     'enable_developers_exception_notification': Bool(default=False),
     'enable_privacy_policy': Bool(default=False),
     'enable_scoring_system': Bool(default=False),
+    'ai_summary_enabled': Bool(default=False),
     'enable_signup': Bool(default=False),
     'encryption': Bool(default=True),
     'escrow': Bool(default=False),
@@ -132,6 +133,7 @@ ConfigFilters = {
     'node': [
         'acme',
         'adminonly',
+        'ai_summary_enabled',
         'allow_indexing',
         'anonymize_outgoing_connections',
         'counter_submissions',
@@ -210,6 +212,7 @@ ConfigFilters = {
     'admin_node': [
         'acme',
         'adminonly',
+        'ai_summary_enabled',
         'allow_indexing',
         'custom_support_url',
         'default_language',
@@ -315,6 +318,7 @@ ConfigFilters = {
     ],
     'public_node': [
         'adminonly',
+        'ai_summary_enabled',
         'custom_support_url',
         'default_language',
         'default_questionnaire',

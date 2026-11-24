@@ -335,6 +335,7 @@ class MockDict:
             'admin_language': 'en',
             'simplified_login': False,
             'enable_scoring_system': False,
+            'ai_summary_enabled': False,
             'enable_signup': True,
             'mode': 'default',
             'signup_tos1_enable': False,

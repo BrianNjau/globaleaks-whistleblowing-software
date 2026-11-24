@@ -25,6 +25,7 @@ export class Node {
   disable_submissions: boolean = false;
   enable_custom_privacy_badge: boolean;
   enable_scoring_system: boolean;
+  ai_summary_enabled: boolean;
   enable_signup: boolean;
   hostname: string;
   https_whistleblower: boolean = false;

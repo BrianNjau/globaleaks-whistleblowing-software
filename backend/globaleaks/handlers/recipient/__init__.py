@@ -14,6 +14,7 @@ from globaleaks.orm import db_get, db_del, db_log, transact
 from globaleaks.rest import requests, errors
 from globaleaks.utils.crypto import GCE
 
+import globaleaks.handlers.recipient.ai_summary
 import globaleaks.handlers.recipient.export
 
 

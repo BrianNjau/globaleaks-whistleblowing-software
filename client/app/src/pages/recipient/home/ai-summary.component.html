@@ -1,0 +1,39 @@
+<section class="chart-card ai-summary mb-3" aria-labelledby="ai-summary-title">
+  <div class="ai-summary-header">
+    <span id="ai-summary-title" class="chart-title">
+      <i class="fa-solid fa-wand-magic-sparkles ai-summary-icon" aria-hidden="true"></i>
+      {{ 'AI summary' | translate }}
+    </span>
+    <button type="button" class="charts-toggle btn btn-sm btn-outline-secondary" [disabled]="loading" (click)="generate()">
+      <i class="fa-solid" aria-hidden="true"
+         [class.fa-spinner]="loading" [class.fa-spin]="loading"
+         [class.fa-rotate-right]="!loading && hasContent"
+         [class.fa-wand-magic-sparkles]="!loading && !hasContent"></i>
+      {{ (hasContent ? 'Regenerate summary' : 'Generate summary') | translate }}
+    </button>
+  </div>
+
+  <div class="ai-summary-body" [class.ai-summary-body--loading]="loading" aria-live="polite" [attr.aria-busy]="loading">
+    @if (hasContent) {
+      <ul class="ai-summary-list">
+        @for (metric of metrics; track metric.label) {
+          <li>
+            {{ metric.label | translate }}:
+            <strong>{{ metric.value }}@if (metric.isDays) { {{ (metric.value === 1 ? 'day' : 'days') | translate }} }</strong>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (errorMessage) {
+      <div class="ai-summary-error" role="status">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        <span>{{ errorMessage | translate }}</span>
+      </div>
+    }
+
+    @if (!hasContent && !errorMessage && !loading) {
+      <p class="chart-nodata ai-summary-empty">{{ 'Generate a short summary of the reports assigned to you.' | translate }}</p>
+    }
+  </div>
+</section>
