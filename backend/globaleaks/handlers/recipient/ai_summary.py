@@ -14,6 +14,11 @@ def is_set(date):
     return date is not None and date.year > 1970
 
 
+def is_conflict_of_interest(name):
+    """Same rule used to number Conflict of Interest reports at submission"""
+    return any('conflict of interest' in v.lower() for v in (name or {}).values() if isinstance(v, str))
+
+
 @transact
 def get_cases(session, tid, receiver_id):
     """
@@ -26,8 +31,12 @@ def get_cases(session, tid, receiver_id):
     :param session: An ORM session
     :param tid: A tenant ID
     :param receiver_id: The recipient ID
-    :return: A list of dicts as expected by compute_metrics
+    :return: A list of dicts as expected by compute_metrics; Conflict of
+             Interest reports are left out
     """
+    coi_context_ids = [c.id for c in session.query(models.Context).filter(models.Context.tid == tid)
+                       if is_conflict_of_interest(c.name)]
+
     cases = {}
     for itip_id, creation_date, update_date, status, important, last_access in \
             session.query(models.InternalTip.id,
@@ -37,6 +46,7 @@ def get_cases(session, tid, receiver_id):
                           models.InternalTip.important,
                           models.ReceiverTip.last_access) \
                    .filter(models.InternalTip.tid == tid,
+                           models.InternalTip.context_id.notin_(coi_context_ids),
                            models.ReceiverTip.internaltip_id == models.InternalTip.id,
                            models.ReceiverTip.receiver_id == receiver_id):
         cases[itip_id] = {

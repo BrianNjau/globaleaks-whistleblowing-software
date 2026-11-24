@@ -90,6 +90,19 @@ class TestAISummary(helpers.TestHandlerWithPopulatedDB):
             'no_update_30_days': 1,
         })
 
+    @transact
+    def rename_channel(self, session, name):
+        for context in session.query(models.Context):
+            context.name = {'en': name}
+
+    @inlineCallbacks
+    def test_conflict_of_interest_reports_are_excluded(self):
+        yield self.rename_channel('Conflict of Interest')
+
+        response = yield self.get(self.dummyReceiver_1)
+
+        self.assertEqual(response, {'metrics': None, 'cases': 0, 'error': 'no_cases'})
+
     @inlineCallbacks
     def test_only_assigned_reports(self):
         yield self.remove_assignments(self.dummyReceiver_2['id'])
