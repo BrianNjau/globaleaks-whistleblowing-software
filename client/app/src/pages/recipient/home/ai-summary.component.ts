@@ -32,7 +32,7 @@ const METRICS: [keyof AiSummaryMetrics, string, boolean][] = [
   ["avg_days_to_close", "Average time to close cases", true],
   ["important", "Cases marked important", false],
   ["unread_updates", "Cases with unread updates", false],
-  ["no_update_30_days", "Cases with no updates for more than 30 days", false],
+  ["no_update_30_days", "Open cases with no updates for more than 30 days", false],
 ];
 
 @Component({
